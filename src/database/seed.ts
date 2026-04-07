@@ -14,7 +14,16 @@ import { Firewall, FirewallType } from '../firewalls/firewall.entity';
 import { Router } from '../routers/router.entity';
 import { Switch } from '../switchs/switch.entity';
 
+const isProd = process.env.APP_ENV === 'production';
+
 async function ensureDatabaseExists() {
+
+  if (isProd) {
+    // En prod (Postgres Render), inutile : la DB est déjà créée
+    console.log('📦 Base Postgres Render déjà provisionnée');
+    return;
+  }
+
   const host = process.env.DB_HOST;
   const port = parseInt(process.env.DB_PORT || '3306', 10);
   const user = process.env.DB_USERNAME || 'root';
@@ -36,15 +45,15 @@ async function ensureDatabaseExists() {
 }
 
 const AppDataSource = new DataSource({
-  type: (process.env.DB_TYPE as any) || 'mysql',
-  host: process.env.DB_HOST || '127.0.0.1',
-  port: parseInt(process.env.DB_PORT || '3306', 10),
-  username: process.env.DB_USERNAME || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_DATABASE || 'network_manager',
+  type: isProd ? 'postgres' : 'mysql',
+  host: process.env.DB_HOST,
+  port: parseInt(process.env.DB_PORT || (isProd ? '5432' : '3306'), 10),
+  username: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
   entities: [User, Site, Firewall, Router, Switch],
   synchronize: true, // utile en dev; désactiver en prod
-  logging: process.env.APP_ENV === 'development',
+  logging: !isProd,
 });
 
 async function seed() {
