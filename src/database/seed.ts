@@ -15,7 +15,7 @@ import { Router } from '../routers/router.entity';
 import { Switch } from '../switchs/switch.entity';
 
 async function ensureDatabaseExists() {
-  const host = process.env.DB_HOST || '127.0.0.1';
+  const host = process.env.DB_HOST;
   const port = parseInt(process.env.DB_PORT || '3306', 10);
   const user = process.env.DB_USERNAME || 'root';
   const password = process.env.DB_PASSWORD || '';
