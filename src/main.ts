@@ -9,7 +9,7 @@ async function bootstrap() {
 
   app.setGlobalPrefix('');
   app.enableCors({
-     origin: ['https://network-manager-ui.vercel.app','http://localhost:4200'],   // autorise uniquement votre frontend
+     origin: 'https://network-manager-ui.vercel.app',   // autorise uniquement votre frontend
      methods: 'GET,POST,PUT,DELETE,PATCH,OPTIONS',
     credentials: true,                 // si vous utilisez cookies / authorization headers
     allowedHeaders: 'Content-Type, Accept, Authorization',
