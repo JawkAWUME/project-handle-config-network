@@ -4,8 +4,8 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors({
-     origin: process.env.FRONTEND_URL ?? 'http://localhost:4200',   // autorise uniquement votre frontend
-     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+     origin: ['https://network-manager-ui.vercel.app','http://localhost:4200'],   // autorise uniquement votre frontend
+     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     credentials: true,                 // si vous utilisez cookies / authorization headers
     allowedHeaders: 'Content-Type, Accept, Authorization',
   })
