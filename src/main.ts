@@ -7,7 +7,6 @@ async function bootstrap() {
     bufferLogs: true,
   });
 
-  app.setGlobalPrefix('');
   app.enableCors({
      origin: 'https://network-manager-ui.vercel.app',   // autorise uniquement votre frontend
      methods: 'GET,POST,PUT,DELETE,PATCH,OPTIONS',
