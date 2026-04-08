@@ -88,7 +88,6 @@ import { AccessLog } from './access-log/access-log.entity';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (config: ConfigService) => {
-        const isProd = config.get('APP_ENV') === 'production';
         const redisUrl = config.get('REDIS_URL');
         if (redisUrl) {
           return {
