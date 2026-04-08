@@ -6,6 +6,7 @@ dotenv.config();
 import { DataSource } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import * as mysql from 'mysql2/promise';
+import * as pg from 'pg';
 
 // Entities (adapte les chemins si nécessaire)
 import { User, UserRole } from '../users/user.entity';
@@ -59,8 +60,9 @@ const AppDataSource = new DataSource({
 async function seed() {
   try {
     // 1) Ensure DB exists
-    await ensureDatabaseExists();
-
+    if(!isProd) {
+      await ensureDatabaseExists();
+    }
     // 2) Initialize TypeORM DataSource
     await AppDataSource.initialize();
     console.log('✅ Connexion DB établie');
