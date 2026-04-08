@@ -1,12 +1,15 @@
 import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
+import { Public } from './common/decorators/public.decorator';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
-
+  @Public() // si vous utilisez un guard global JWT, rendre cette route publique
   @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  getRoot() {
+    return {
+      message: 'NetConfig API is running',
+      timestamp: new Date().toISOString(),
+      version: '1.0',
+    };
   }
 }
