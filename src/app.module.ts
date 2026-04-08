@@ -28,21 +28,42 @@ import { AccessLog } from './access-log/access-log.entity';
       isGlobal: true,
     }),
 
-    // Database MySQL
+    // Database – supporte MySQL en dev, PostgreSQL en production (Render)
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        type: 'mysql',
-        host: config.get<string>('DB_HOST'),
-        port: config.get<number>('DB_PORT'),
-        username: config.get<string>('DB_USERNAME'),
-        password: config.get<string>('DB_PASSWORD'),
-        database: config.get<string>('DB_DATABASE'),
-        entities: [User, Site, Firewall, Router, Switch, ConfigurationHistory, AccessLog],
-        synchronize: config.get<string>('APP_ENV') !== 'production',
-        logging: config.get<string>('APP_ENV') === 'development',
-      }),
+      useFactory: (config: ConfigService) => {
+        const isProd = config.get<string>('APP_ENV') === 'production';
+        const databaseUrl = config.get<string>('DATABASE_URL');
+        
+        // Si DATABASE_URL est fournie, on l'utilise (Render fournit cette variable)
+        if (databaseUrl) {
+          return {
+            type: isProd ? 'postgres' : 'mysql',
+            url: databaseUrl,
+            entities: [User, Site, Firewall, Router, Switch, ConfigurationHistory, AccessLog],
+            synchronize: false, // jamais en production, mais pour éviter les surprises
+            logging: config.get<string>('APP_ENV') === 'development',
+            ssl: isProd ? { rejectUnauthorized: false } : false,
+          };
+        }
+        
+        // Sinon, on utilise les variables individuelles (environnement local)
+        const dbType = config.get<string>('DB_TYPE') || 'mysql';
+        return {
+          type: dbType as any,
+          host: config.get<string>('DB_HOST'),
+          port: config.get<number>('DB_PORT'),
+          username: config.get<string>('DB_USERNAME'),
+          password: config.get<string>('DB_PASSWORD'),
+          database: config.get<string>('DB_DATABASE'),
+          entities: [User, Site, Firewall, Router, Switch, ConfigurationHistory, AccessLog],
+          synchronize: !isProd,
+          logging: config.get<string>('APP_ENV') === 'development',
+          // Pour PostgreSQL en local, ssl n'est pas nécessaire
+          ...(dbType === 'postgres' && isProd ? { ssl: { rejectUnauthorized: false } } : {}),
+        };
+      },
     }),
 
     JwtModule.register({
