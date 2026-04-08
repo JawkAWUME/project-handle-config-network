@@ -45,17 +45,55 @@ async function ensureDatabaseExists() {
   console.log(`📦 Base "${dbName}" vérifiée/créée`);
 }
 
-const AppDataSource = new DataSource({
-  type: isProd ? 'postgres' : 'mysql',
-  host: process.env.DB_HOST,
-  port: parseInt(process.env.DB_PORT || (isProd ? '5432' : '3306'), 10),
-  username: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE,
-  entities: [User, Site, Firewall, Router, Switch],
-  synchronize: true, // utile en dev; désactiver en prod
-  logging: !isProd,
-});
+function buildDataSource(): DataSource {
+  const databaseUrl = process.env.DATABASE_URL;
+
+  let config: any = {
+    type: isProd ? 'postgres' : 'mysql',
+    autoLoadEntities: true,
+    synchronize: !isProd,
+    logging: !isProd,
+  };
+
+  if (databaseUrl) {
+    const url = new URL(databaseUrl);
+    config = {
+      ...config,
+      url: databaseUrl,
+      host: url.hostname,
+      port: parseInt(url.port) || (isProd ? 5432 : 3306),
+      username: url.username,
+      password: url.password,
+      database: url.pathname.substring(1),
+      ssl: isProd ? { rejectUnauthorized: false } : false,
+    };
+  } else {
+    config = {
+      ...config,
+      host: process.env.DATABASE_HOST,
+      port: parseInt(process.env.DATABASE_PORT || (isProd ? '5432' : '3306'), 10),
+      username: process.env.DATABASE_USERNAME,
+      password: process.env.DATABASE_PASSWORD,
+      database: process.env.DATABASE_NAME || 'network_manager',
+      ssl: isProd ? { rejectUnauthorized: false } : false,
+    };
+  }
+
+  console.log('Database config:', {
+    host: config.host,
+    port: config.port,
+    database: config.database,
+    ssl: config.ssl,
+    synchronize: config.synchronize,
+  });
+
+  return new DataSource({
+    ...config,
+    entities: [User, Site, Firewall, Router, Switch],
+  });
+}
+
+const AppDataSource = buildDataSource();
 
 async function seed() {
   try {
