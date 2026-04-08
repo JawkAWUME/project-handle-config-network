@@ -51,7 +51,7 @@ function buildDataSource(): DataSource {
   let config: any = {
     type: isProd ? 'postgres' : 'mysql',
     autoLoadEntities: true,
-    synchronize: !isProd,
+    synchronize: true,
     logging: !isProd,
   };
 

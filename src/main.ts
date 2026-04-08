@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { WinstonModule } from 'nest-winston';
+import compression from 'compression';
 import * as winston from 'winston';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filters/http-exception.filter';
@@ -36,6 +37,7 @@ async function bootstrap() {
       },
     }),
   );
+  app.use(compression());
   app.enableCors({
     origin: process.env.FRONTEND_URL ?? 'http://localhost:4200',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
