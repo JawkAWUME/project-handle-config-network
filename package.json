@@ -41,11 +41,13 @@
         "exceljs": "^4.4.0",
         "geoip-lite": "^1.4.10",
         "mysql2": "^3.20.0",
+        "nest-winston": "^1.10.2",
         "pg": "^8.20.0",
         "reflect-metadata": "^0.2.2",
         "rxjs": "^7.8.1",
         "ua-parser": "^0.3.5",
-        "ua-parser-js": "^2.0.9"
+        "ua-parser-js": "^2.0.9",
+        "winston": "^3.19.0"
     },
     "devDependencies": {
         "@eslint/eslintrc": "^3.2.0",
