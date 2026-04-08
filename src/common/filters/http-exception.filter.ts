@@ -34,9 +34,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     );
 
     // En production, on renvoie un message générique pour les 500
-    const clientMessage = status === HttpStatus.INTERNAL_SERVER_ERROR
-      ? 'Erreur interne du serveur. Consultez les logs.'
-      : message;
+    const clientMessage = message;
 
     response.status(status).json({
       success: false,
