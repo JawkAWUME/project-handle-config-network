@@ -3,6 +3,7 @@ import { WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filters/http-exception.filter';
+import { ValidationPipe, BadRequestException } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -24,7 +25,17 @@ async function bootstrap() {
   });
   // Filtre global pour toutes les exceptions
   app.useGlobalFilters(new AllExceptionsFilter());
-
+  app.useGlobalPipes(
+    new ValidationPipe({
+      exceptionFactory: (errors) => {
+        const messages = errors
+          .map((e) => Object.values(e.constraints ?? {}).join(', '))
+          .filter(Boolean)
+          .join('; ');
+        return new BadRequestException(messages);
+      },
+    }),
+  );
   app.enableCors({
     origin: process.env.FRONTEND_URL ?? 'http://localhost:4200',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
