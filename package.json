@@ -16,7 +16,7 @@
         "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
         "migration:generate": "npm run typeorm migration:generate -- -d data-source.ts",
         "migration:run": "node dist/scripts/run-migrations.js",
-        "prestart": "npm run migrations:run",
+        "prestart": "npm run migration:run",
         "migration:revert": "npm run typeorm migration:revert -- -d data-source.ts",
         "test": "jest",
         "test:watch": "jest --watch",
