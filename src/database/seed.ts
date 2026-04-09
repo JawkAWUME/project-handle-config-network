@@ -6,8 +6,6 @@ dotenv.config();
 import { DataSource } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import * as mysql from 'mysql2/promise';
-import * as pg from 'pg';
-
 // Entities (adapte les chemins si nécessaire)
 import { User, UserRole } from '../users/user.entity';
 import { Site } from '../sites/site.entity';
