@@ -3,9 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { CacheModule } from '@nestjs/cache-manager';
-import { redisStore } from 'cache-manager-redis-store';
-import type { RedisClientOptions } from 'redis';
+
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { SitesModule } from './sites/sites.module';
@@ -83,28 +81,7 @@ import { AccessLog } from './access-log/access-log.entity';
       },
     }),
 
-    CacheModule.registerAsync<RedisClientOptions>({
-      isGlobal: true,
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (config: ConfigService) => {
-        const redisUrl = config.get('REDIS_URL');
-        if (redisUrl) {
-          return {
-            store: await redisStore({
-              url: redisUrl,
-              ttl: 300, // 5 minutes par défaut
-            }),
-          };
-        } else {
-          // Fallback en mémoire (développement)
-          return {
-            store: 'memory',
-            ttl: 300,
-          };
-        }
-      },
-    }),
+    
 
     PassportModule,
     AuthModule,
