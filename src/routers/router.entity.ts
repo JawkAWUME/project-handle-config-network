@@ -70,7 +70,6 @@ export class Router {
   username: string;
 
   @Column({ nullable: true })
-  @Exclude()
   password: string;
 
   @Column({ nullable: true })

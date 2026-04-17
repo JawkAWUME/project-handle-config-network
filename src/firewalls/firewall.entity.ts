@@ -67,7 +67,6 @@ export class Firewall {
   username: string;
 
   @Column({ nullable: true })
-  @Exclude()
   password: string;
 
   @Column({ nullable: true })
