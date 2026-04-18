@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { forwardRef, Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from 'typeorm';
 import { PendingChange } from "./pending-change.entity";
@@ -14,14 +14,20 @@ import { SitesService } from "src/sites/sites.service";
 // pending-changes.service.ts
 @Injectable()
 export class PendingChangeService {
-  constructor(
+ constructor(
     @InjectRepository(PendingChange)
     private pendingRepo: Repository<PendingChange>,
-    private routersService: RoutersService, 
+
+    @Inject(forwardRef(() => RoutersService))
+    private routersService: RoutersService,
+
+    @Inject(forwardRef(() => SwitchesService))
     private switchesService: SwitchesService,
-    // Injecter le service des firewalls
+
+    @Inject(forwardRef(() => FirewallsService))
     private firewallsService: FirewallsService,
-    // Injecter le service des sites
+
+    @Inject(forwardRef(() => SitesService))
     private sitesService: SitesService,
   ) {}
 

@@ -11,6 +11,8 @@ import {
   Request,
   Res,
   ForbiddenException,
+  forwardRef,
+  Inject,
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { RoutersService } from './routers.service';
@@ -25,6 +27,7 @@ import { ChangeAction } from '../pending-change/pending-change.entity';
 export class RoutersController {
   constructor(
     private readonly routersService: RoutersService,
+     @Inject(forwardRef(() => PendingChangeService))
     private readonly pendingChangeService: PendingChangeService,
   ) {}
 
