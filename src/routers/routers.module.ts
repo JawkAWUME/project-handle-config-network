@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Router } from './router.entity';
 import { RoutersService } from './routers.service';
@@ -12,7 +12,7 @@ import { SitesModule } from 'src/sites/sites.module';
 import { SwitchesModule } from 'src/switchs/switch.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Router, ConfigurationHistory,PendingChange]), SwitchesModule,SitesModule],
+  imports: [TypeOrmModule.forFeature([Router, ConfigurationHistory,PendingChange]), forwardRef(() => SwitchesModule)],
   controllers: [RoutersController],
   providers: [RoutersService,PendingChangeService],
   exports: [RoutersService,PendingChangeService],
