@@ -16,7 +16,6 @@ export class FirewallsService {
     private configHistoryRepository: Repository<ConfigurationHistory>,
   ) {}
 
-  // Équivalent FirewallController::getFirewalls()
   async findAll(query: FirewallQueryDto): Promise<{ data: any[]; total: number }> {
     const qb = this.firewallsRepository
       .createQueryBuilder('fw')
@@ -48,7 +47,6 @@ export class FirewallsService {
     return { data: firewalls.map(fw => this.formatFirewall(fw)), total };
   }
 
-  // Équivalent FirewallController::getFirewall()
   async findOne(id: number): Promise<any> {
     const fw = await this.firewallsRepository.findOne({
       where: { id },
@@ -65,7 +63,6 @@ export class FirewallsService {
     return { ...this.formatFirewall(fw), configuration_histories: history };
   }
 
-  // Équivalent FirewallController::store()
   async create(dto: CreateFirewallDto, user: any): Promise<any> {
     if (user.role === UserRole.VIEWER) {
       throw new ForbiddenException('Les viewers ne peuvent pas créer des firewalls.');
@@ -82,7 +79,6 @@ export class FirewallsService {
     return this.formatFirewall(loaded);
   }
 
-  // Équivalent FirewallController::update()
   async update(id: number, dto: UpdateFirewallDto, user: any): Promise<any> {
     if (user.role === UserRole.VIEWER) {
       throw new ForbiddenException('Les viewers ne peuvent pas modifier des firewalls.');
@@ -100,7 +96,6 @@ export class FirewallsService {
     return this.formatFirewall(loaded);
   }
 
-  // Équivalent FirewallController::destroy()
   async remove(id: number, user: any): Promise<void> {
     if (user.role !== UserRole.ADMIN) {
       throw new ForbiddenException('Seul un admin peut supprimer des firewalls.');
@@ -110,7 +105,6 @@ export class FirewallsService {
     await this.firewallsRepository.remove(fw);
   }
 
-  // Équivalent FirewallService::getFirewallStatistics()
   async getStatistics(): Promise<any> {
     const total = await this.firewallsRepository.count();
     const active = await this.firewallsRepository.count({ where: { status: true } });
@@ -131,7 +125,6 @@ export class FirewallsService {
       .groupBy('fw.firewall_type')
       .getRawMany();
 
-    // Firewalls sans backup depuis plus de 7 jours
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
     const needingBackup = await this.firewallsRepository
@@ -149,12 +142,9 @@ export class FirewallsService {
     };
   }
 
-  // Équivalent FirewallController::testConnectivity()
   async testConnectivity(id: number): Promise<any> {
     const fw = await this.firewallsRepository.findOne({ where: { id } });
     if (!fw) throw new NotFoundException('Firewall introuvable.');
-
-    // Simulation du test de connectivité (dans Laravel c'est aussi simulé)
     return {
       firewall_id: id,
       ip_nms: fw.ip_nms,
@@ -166,7 +156,6 @@ export class FirewallsService {
     };
   }
 
-  // Équivalent FirewallController::getDashboardKpis()
   async getDashboardKpis(): Promise<any> {
     const stats = await this.getStatistics();
     return {
@@ -180,7 +169,6 @@ export class FirewallsService {
     };
   }
 
-  // Équivalent FirewallExport.php + Maatwebsite Excel
   async exportToExcel(): Promise<Buffer> {
     const firewalls = await this.firewallsRepository.find({
       relations: ['site'],
@@ -241,7 +229,6 @@ export class FirewallsService {
     return Buffer.from(buffer);
   }
 
-  // Équivalent de la méthode privée formatFirewall() dans le Controller Laravel
   private formatFirewall(fw: Firewall): any {
     const toStatus = (v: boolean) => (v ? 'active' : 'danger');
     return {
@@ -270,19 +257,15 @@ export class FirewallsService {
       updated_at: fw.updated_at?.toISOString(),
       site: fw.site?.name ?? 'N/A',
       site_id: fw.site_id,
+      configuration: fw.configuration,   // ← AJOUTÉ pour stocker les politiques texte
     };
   }
 
   async updateSecurityPolicies(id: number, policies: string, user: any): Promise<Firewall> {
     const fw = await this.firewallsRepository.findOne({ where: { id } });
     if (!fw) throw new NotFoundException('Firewall introuvable.');
-    // Vous avez déjà `security_policies` de type `object[]`
-    try {
-      const parsed = JSON.parse(policies);
-      fw.security_policies = Array.isArray(parsed) ? parsed : [parsed];
-    } catch {
-      fw.security_policies = [{ raw: policies }];
-    }
+    // On stocke le texte brut dans la colonne 'configuration' (type text)
+    fw.configuration = policies;
     await this.firewallsRepository.save(fw);
     return fw;
   }

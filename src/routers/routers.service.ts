@@ -242,13 +242,14 @@ export class RoutersService {
       updated_at: router.updated_at?.toISOString(),
       site: router.site?.name ?? 'N/A',
       site_id: router.site_id,
+      interfaces_config: router.interfaces_config,   // ← AJOUTÉ
     };
   }
 
   async updateInterfaces(id: number, config: string, user: any): Promise<Router> {
     const router = await this.routersRepository.findOne({ where: { id } });
     if (!router) throw new NotFoundException('Routeur introuvable.');
-    router.interfaces_config = config; // Ajouter cette colonne
+    router.interfaces_config = config;
     await this.routersRepository.save(router);
     return router;
   }

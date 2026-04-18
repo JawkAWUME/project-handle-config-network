@@ -74,7 +74,6 @@ export class Firewall {
   enable_password: string;
 
   @Column({ nullable: true, type: 'text' })
-  @Exclude()
   configuration: string;
 
   @Column({ nullable: true, type: 'text' })

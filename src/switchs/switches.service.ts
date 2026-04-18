@@ -151,56 +151,56 @@ export class SwitchesService {
   }
 
   async exportToExcel(): Promise<Buffer> {
-  const switches = await this.switchesRepository.find({
-    relations: ['site'],
-    order: { name: 'ASC' },
-  });
-
-  const workbook = new ExcelJS.Workbook();
-  const sheet = workbook.addWorksheet('Switches');
-
-  sheet.columns = [
-    { header: 'ID', key: 'id', width: 8 },
-    { header: 'Nom', key: 'name', width: 25 },
-    { header: 'Site', key: 'site', width: 20 },
-    { header: 'Marque', key: 'brand', width: 15 },
-    { header: 'Modèle', key: 'model', width: 15 },
-    { header: 'IP NMS', key: 'ip_nms', width: 18 },
-    { header: 'IP Service', key: 'ip_service', width: 18 },
-    { header: 'VLAN NMS', key: 'vlan_nms', width: 12 },
-    { header: 'VLAN Service', key: 'vlan_service', width: 14 },
-    { header: 'Version firmware', key: 'firmware_version', width: 20 },
-    { header: 'Ports (total/used)', key: 'ports', width: 18 },
-    { header: 'N° Série', key: 'serial_number', width: 20 },
-    { header: 'Statut', key: 'status', width: 12 },
-    { header: 'Dernier backup', key: 'last_backup', width: 20 },
-  ];
-
-  sheet.getRow(1).font = { bold: true };
-  sheet.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF2196F3' } };
-
-  switches.forEach(s => {
-    sheet.addRow({
-      id: s.id,
-      name: s.name,
-      site: s.site?.name ?? 'N/A',
-      brand: s.brand,
-      model: s.model,
-      ip_nms: s.ip_nms,
-      ip_service: s.ip_service,
-      vlan_nms: s.vlan_nms,
-      vlan_service: s.vlan_service,
-      firmware_version: s.firmware_version,
-      ports: `${s.ports_used}/${s.ports_total}`,
-      serial_number: s.serial_number,
-      status: s.status ? 'Actif' : 'Inactif',
-      last_backup: s.last_backup ? new Date(s.last_backup).toLocaleDateString('fr-FR') : 'Jamais',
+    const switches = await this.switchesRepository.find({
+      relations: ['site'],
+      order: { name: 'ASC' },
     });
-  });
 
-  const buffer = await workbook.xlsx.writeBuffer();
-  return Buffer.from(buffer);
-}
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet('Switches');
+
+    sheet.columns = [
+      { header: 'ID', key: 'id', width: 8 },
+      { header: 'Nom', key: 'name', width: 25 },
+      { header: 'Site', key: 'site', width: 20 },
+      { header: 'Marque', key: 'brand', width: 15 },
+      { header: 'Modèle', key: 'model', width: 15 },
+      { header: 'IP NMS', key: 'ip_nms', width: 18 },
+      { header: 'IP Service', key: 'ip_service', width: 18 },
+      { header: 'VLAN NMS', key: 'vlan_nms', width: 12 },
+      { header: 'VLAN Service', key: 'vlan_service', width: 14 },
+      { header: 'Version firmware', key: 'firmware_version', width: 20 },
+      { header: 'Ports (total/used)', key: 'ports', width: 18 },
+      { header: 'N° Série', key: 'serial_number', width: 20 },
+      { header: 'Statut', key: 'status', width: 12 },
+      { header: 'Dernier backup', key: 'last_backup', width: 20 },
+    ];
+
+    sheet.getRow(1).font = { bold: true };
+    sheet.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF2196F3' } };
+
+    switches.forEach(s => {
+      sheet.addRow({
+        id: s.id,
+        name: s.name,
+        site: s.site?.name ?? 'N/A',
+        brand: s.brand,
+        model: s.model,
+        ip_nms: s.ip_nms,
+        ip_service: s.ip_service,
+        vlan_nms: s.vlan_nms,
+        vlan_service: s.vlan_service,
+        firmware_version: s.firmware_version,
+        ports: `${s.ports_used}/${s.ports_total}`,
+        serial_number: s.serial_number,
+        status: s.status ? 'Actif' : 'Inactif',
+        last_backup: s.last_backup ? new Date(s.last_backup).toLocaleDateString('fr-FR') : 'Jamais',
+      });
+    });
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    return Buffer.from(buffer);
+  }
 
   private formatSwitch(sw: Switch): any {
     return {
@@ -223,13 +223,13 @@ export class SwitchesService {
       updated_at: sw.updated_at?.toISOString(),
       site: sw.site?.name ?? 'N/A',
       site_id: sw.site_id,
+      port_config: sw.port_config,   // ← AJOUTÉ
     };
   }
 
   async updatePorts(id: number, configuration: string, user: any): Promise<Switch> {
     const sw = await this.switchesRepository.findOne({ where: { id } });
     if (!sw) throw new NotFoundException('Switch introuvable.');
-    // Stocker la configuration (vous devez avoir une colonne `port_config` dans l'entité)
     sw.port_config = configuration;
     await this.switchesRepository.save(sw);
     return sw;
