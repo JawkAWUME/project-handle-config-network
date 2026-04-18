@@ -5,11 +5,17 @@ import { SitesService } from './sites.service';
 import { Site } from './site.entity';
 import { PendingChangeService } from 'src/pending-change/pending-changes.service';
 import { PendingChange } from 'src/pending-change/pending-change.entity';
+import { RoutersService } from 'src/routers/routers.service';
+import { FirewallsService } from 'src/firewalls/firewalls.service';
+import { SwitchesService } from 'src/switchs/switches.service';
+import { Switch } from 'src/switchs/switch.entity';
+import { Router } from 'src/routers/router.entity';
+import { Firewall } from 'src/firewalls/firewall.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Site, PendingChange])],
+  imports: [TypeOrmModule.forFeature([Site, PendingChange,Router, Firewall, Switch])],
   controllers: [SitesController],
-  providers: [SitesService,PendingChangeService],
-  exports: [SitesService,PendingChangeService],
+  providers: [SitesService,PendingChangeService, RoutersService, FirewallsService, SwitchesService],
+  exports: [SitesService,PendingChangeService, RoutersService, FirewallsService, SwitchesService],
 })
 export class SitesModule {}
