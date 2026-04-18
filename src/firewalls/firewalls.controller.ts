@@ -1,6 +1,8 @@
 import {
   Controller, Get, Post, Put, Delete,
   Body, Param, Query, ParseIntPipe, Request, Res, ForbiddenException,
+  forwardRef,
+  Inject,
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { FirewallsService } from './firewalls.service';
@@ -14,6 +16,7 @@ import { PendingChangeService } from '../pending-change/pending-changes.service'
 export class FirewallsController {
   constructor(
     private readonly firewallsService: FirewallsService,
+    @Inject(forwardRef(() => PendingChangeService))
     private readonly pendingChangeService: PendingChangeService,
   ) {}
 

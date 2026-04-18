@@ -11,6 +11,8 @@ import {
   Request,
   Res,
   ForbiddenException,
+  forwardRef,
+  Inject,
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { SwitchesService } from './switches.service';
@@ -24,6 +26,7 @@ import { PendingChangeService } from '../pending-change/pending-changes.service'
 export class SwitchesController {
   constructor(
     private readonly switchesService: SwitchesService,
+    @Inject(forwardRef(() => PendingChangeService))
     private readonly pendingChangeService: PendingChangeService,
   ) {}
 

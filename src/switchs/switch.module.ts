@@ -8,9 +8,11 @@ import { ConfigurationHistory } from '../config-history/config-history.entity';
 import { PendingChangeService } from 'src/pending-change/pending-changes.service';
 import { PendingChange } from 'src/pending-change/pending-change.entity';
 import { RoutersModule } from 'src/routers/routers.module';
+import { PendingChangeModule } from 'src/pending-change/pending-change.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Switch, ConfigurationHistory,PendingChange])],
+  imports: [TypeOrmModule.forFeature([Switch, ConfigurationHistory,PendingChange]),
+ forwardRef(() => PendingChangeModule)],
   controllers: [SwitchesController],
   providers: [SwitchesService],
   exports: [SwitchesService],
