@@ -1,33 +1,25 @@
 import {
   Controller, Get, Post, Put, Delete,
-  Body, Param, Query, ParseIntPipe, Request, Res,
+  Body, Param, Query, ParseIntPipe, Request, Res, ForbiddenException,
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { SitesService } from './sites.service';
-import { CreateSiteDto, UpdateSiteDto } from './sites.dto';
+import { CreateSiteDto, UpdateSiteDto, SearchSiteDto } from './sites.dto';
+import { Roles } from '../index';
+import { UserRole } from '../users/user.entity';
+import { PendingChangeService } from '../pending-change/pending-changes.service';
 
-/**
- * Équivalent des routes api/sites dans web.php :
- *   GET    /api/sites/list
- *   GET    /api/sites/:id
- *   POST   /api/sites/
- *   PUT    /api/sites/:id
- *   DELETE /api/sites/:id
- *   GET    /api/sites/export  (Excel)
- */
 @Controller('sites')
+@Roles(UserRole.ADMIN, UserRole.AGENT)
 export class SitesController {
-  constructor(private readonly sitesService: SitesService) {}
+  constructor(
+    private readonly sitesService: SitesService,
+    private readonly pendingChangeService: PendingChangeService,
+  ) {}
 
   @Get('list')
-  async getSites(
-    @Query('search') search?: string,
-    @Query('status') status?: string,
-    @Query('city') city?: string,
-    @Query('country') country?: string,
-    @Query('limit') limit?: number,
-  ) {
-    const result = await this.sitesService.findAll({ search, status, city, country, limit });
+  async getSites(@Query() query: SearchSiteDto) {
+    const result = await this.sitesService.findAll(query);
     return { success: true, ...result, timestamp: new Date().toISOString() };
   }
 
@@ -59,13 +51,51 @@ export class SitesController {
     @Body() dto: UpdateSiteDto,
     @Request() req,
   ) {
-    const site = await this.sitesService.update(id, dto, req.user);
-    return { success: true, message: 'Site mis à jour', data: site };
+    const user = req.user;
+    if (user.role === UserRole.ADMIN) {
+      const site = await this.sitesService.update(id, dto, user);
+      return { success: true, message: 'Site mis à jour', data: site };
+    } else if (user.role === UserRole.AGENT) {
+      const current = await this.sitesService.findOne(id);
+      const pending = await this.pendingChangeService.create({
+        entity_type: 'site',
+        entity_id: id,
+        action: 'update',
+        new_data: dto,
+        old_data: current,
+        requested_by_id: user.id,
+      });
+      return {
+        success: true,
+        message: 'Votre modification a été soumise à l’approbation d’un administrateur.',
+        pending_id: pending.id,
+      };
+    }
+    throw new ForbiddenException('Action non autorisée');
   }
 
   @Delete(':id')
   async destroy(@Param('id', ParseIntPipe) id: number, @Request() req) {
-    await this.sitesService.remove(id, req.user);
-    return { success: true, message: 'Site supprimé avec succès' };
+    const user = req.user;
+    if (user.role === UserRole.ADMIN) {
+      await this.sitesService.remove(id, user);
+      return { success: true, message: 'Site supprimé avec succès' };
+    } else if (user.role === UserRole.AGENT) {
+      const current = await this.sitesService.findOne(id);
+      const pending = await this.pendingChangeService.create({
+        entity_type: 'site',
+        entity_id: id,
+        action: 'delete',
+        new_data: undefined,
+        old_data: current,
+        requested_by_id: user.id,
+      });
+      return {
+        success: true,
+        message: 'Votre demande de suppression a été soumise à l’approbation.',
+        pending_id: pending.id,
+      };
+    }
+    throw new ForbiddenException('Action non autorisée');
   }
 }

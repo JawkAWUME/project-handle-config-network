@@ -1,28 +1,21 @@
 import {
   Controller, Get, Post, Put, Delete,
-  Body, Param, Query, ParseIntPipe, Request, Res,
+  Body, Param, Query, ParseIntPipe, Request, Res, ForbiddenException,
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { FirewallsService } from './firewalls.service';
-import { CreateFirewallDto, UpdateFirewallDto } from './firewalls.dto';
+import { CreateFirewallDto, UpdateFirewallDto, FirewallQueryDto } from './firewalls.dto';
+import { Roles } from '../index';
+import { UserRole } from '../users/user.entity';
+import { PendingChangeService } from '../pending-change/pending-changes.service';
 
-/**
- * Équivalent des routes api/firewalls dans web.php
- * Toutes les routes requièrent auth (JwtAuthGuard global)
- *
- * GET    /api/firewalls/statistics
- * GET    /api/firewalls/list
- * GET    /api/firewalls/dashboard-kpis
- * GET    /api/firewalls/:id
- * POST   /api/firewalls/
- * PUT    /api/firewalls/:id
- * DELETE /api/firewalls/:id
- * POST   /api/firewalls/:id/test-connectivity
- * GET    /api/firewalls/export
- */
 @Controller('firewalls')
+@Roles(UserRole.ADMIN, UserRole.AGENT)
 export class FirewallsController {
-  constructor(private readonly firewallsService: FirewallsService) {}
+  constructor(
+    private readonly firewallsService: FirewallsService,
+    private readonly pendingChangeService: PendingChangeService,
+  ) {}
 
   @Get('statistics')
   async getStatistics() {
@@ -47,17 +40,8 @@ export class FirewallsController {
   }
 
   @Get('list')
-  async getFirewalls(
-    @Query('search') search?: string,
-    @Query('status') status?: string,
-    @Query('brand') brand?: string,
-    @Query('site_id') site_id?: number,
-    @Query('firewall_type') firewall_type?: string,
-    @Query('limit') limit?: number,
-  ) {
-    const result = await this.firewallsService.findAll({
-      search, status, brand, site_id, firewall_type, limit,
-    });
+  async getFirewalls(@Query() query: FirewallQueryDto) {
+    const result = await this.firewallsService.findAll(query);
     return { success: true, ...result, timestamp: new Date().toISOString() };
   }
 
@@ -68,10 +52,28 @@ export class FirewallsController {
   }
 
   @Post()
-  async store(@Body() dto: CreateFirewallDto, @Request() req) {
-    const data = await this.firewallsService.create(dto, req.user);
+async store(@Body() dto: CreateFirewallDto, @Request() req) {
+  const user = req.user;
+  if (user.role === UserRole.ADMIN) {
+    const data = await this.firewallsService.create(dto, user);
     return { success: true, message: 'Firewall créé avec succès', data };
+  } else if (user.role === UserRole.AGENT) {
+    const pending = await this.pendingChangeService.create({
+      entity_type: 'firewall',
+      entity_id: undefined,
+      action: 'create',
+      new_data: dto,
+      old_data: undefined,
+      requested_by_id: user.id,
+    });
+    return {
+      success: true,
+      message: 'Votre demande de création a été soumise à l’approbation d’un administrateur.',
+      pending_id: pending.id,
+    };
   }
+  throw new ForbiddenException('Action non autorisée');
+}
 
   @Put(':id')
   async update(
@@ -79,14 +81,52 @@ export class FirewallsController {
     @Body() dto: UpdateFirewallDto,
     @Request() req,
   ) {
-    const data = await this.firewallsService.update(id, dto, req.user);
-    return { success: true, message: 'Firewall mis à jour avec succès', data };
+    const user = req.user;
+    if (user.role === UserRole.ADMIN) {
+      const data = await this.firewallsService.update(id, dto, user);
+      return { success: true, message: 'Firewall mis à jour avec succès', data };
+    } else if (user.role === UserRole.AGENT) {
+      const current = await this.firewallsService.findOne(id);
+      const pending = await this.pendingChangeService.create({
+        entity_type: 'firewall',
+        entity_id: id,
+        action: 'update',
+        new_data: dto,
+        old_data: current,
+        requested_by_id: user.id,
+      });
+      return {
+        success: true,
+        message: 'Votre modification a été soumise à l’approbation d’un administrateur.',
+        pending_id: pending.id,
+      };
+    }
+    throw new ForbiddenException('Action non autorisée');
   }
 
   @Delete(':id')
   async destroy(@Param('id', ParseIntPipe) id: number, @Request() req) {
-    await this.firewallsService.remove(id, req.user);
-    return { success: true, message: 'Firewall supprimé avec succès' };
+    const user = req.user;
+    if (user.role === UserRole.ADMIN) {
+      await this.firewallsService.remove(id, user);
+      return { success: true, message: 'Firewall supprimé avec succès' };
+    } else if (user.role === UserRole.AGENT) {
+      const current = await this.firewallsService.findOne(id);
+      const pending = await this.pendingChangeService.create({
+        entity_type: 'firewall',
+        entity_id: id,
+        action: 'delete',
+        new_data: undefined,
+        old_data: current,
+        requested_by_id: user.id,
+      });
+      return {
+        success: true,
+        message: 'Votre demande de suppression a été soumise à l’approbation.',
+        pending_id: pending.id,
+      };
+    }
+    throw new ForbiddenException('Action non autorisée');
   }
 
   @Post(':id/test-connectivity')
@@ -95,7 +135,6 @@ export class FirewallsController {
     return { success: true, data, message: 'Test de connectivité terminé' };
   }
 
-  // Ajouter dans FirewallsController
   @Post(':id/update-security-policies')
   async updateSecurityPolicies(
     @Param('id', ParseIntPipe) id: number,
@@ -105,5 +144,4 @@ export class FirewallsController {
     const result = await this.firewallsService.updateSecurityPolicies(id, policies, req.user);
     return { success: true, message: 'Politiques de sécurité mises à jour', data: result };
   }
-  
 }
