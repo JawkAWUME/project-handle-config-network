@@ -172,55 +172,62 @@ export class RoutersService {
     };
   }
 
-  async exportToExcel(): Promise<Buffer> {
-    const routers = await this.routersRepository.find({
-      relations: ['site'],
-      order: { name: 'ASC' },
+ async exportToExcel(): Promise<Buffer> {
+  const routers = await this.routersRepository.find({
+    relations: ['site'],
+    order: { name: 'ASC' },
+  });
+
+  const workbook = new ExcelJS.Workbook();
+  const sheet = workbook.addWorksheet('Routeurs');
+
+  sheet.columns = [
+    { header: 'ID', key: 'id', width: 8 },
+    { header: 'Nom', key: 'name', width: 25 },
+    { header: 'Site', key: 'site', width: 20 },
+    { header: 'Marque', key: 'brand', width: 15 },
+    { header: 'Modèle', key: 'model', width: 15 },
+    { header: 'IP NMS', key: 'ip_nms', width: 18 },
+    { header: 'IP Service', key: 'ip_service', width: 18 },
+    { header: 'VLAN NMS', key: 'vlan_nms', width: 12 },
+    { header: 'VLAN Service', key: 'vlan_service', width: 14 },
+    { header: 'OS', key: 'operating_system', width: 15 },
+    { header: 'N° Série', key: 'serial_number', width: 20 },
+    { header: 'Statut', key: 'status', width: 12 },
+    { header: 'Dernier backup', key: 'last_backup', width: 20 },
+    { header: 'Configuration interfaces', key: 'interfaces_config', width: 60 }, // ← nouvelle colonne
+  ];
+
+  sheet.getRow(1).font = { bold: true };
+  sheet.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF4CAF50' } };
+
+  routers.forEach(r => {
+    let configText = r.interfaces_config || '';
+    if (configText.length > 30000) configText = configText.substring(0, 30000) + '… (tronqué)';
+    
+    sheet.addRow({
+      id: r.id,
+      name: r.name,
+      site: r.site?.name ?? 'N/A',
+      brand: r.brand,
+      model: r.model,
+      ip_nms: r.ip_nms,
+      ip_service: r.ip_service,
+      vlan_nms: r.vlan_nms,
+      vlan_service: r.vlan_service,
+      operating_system: r.operating_system,
+      serial_number: r.serial_number,
+      status: r.status ? 'Actif' : 'Inactif',
+      last_backup: r.last_backup ? new Date(r.last_backup).toLocaleDateString('fr-FR') : 'Jamais',
+      interfaces_config: configText,
     });
+  });
 
-    const workbook = new ExcelJS.Workbook();
-    const sheet = workbook.addWorksheet('Routeurs');
-
-    sheet.columns = [
-      { header: 'ID', key: 'id', width: 8 },
-      { header: 'Nom', key: 'name', width: 25 },
-      { header: 'Site', key: 'site', width: 20 },
-      { header: 'Marque', key: 'brand', width: 15 },
-      { header: 'Modèle', key: 'model', width: 15 },
-      { header: 'IP NMS', key: 'ip_nms', width: 18 },
-      { header: 'IP Service', key: 'ip_service', width: 18 },
-      { header: 'VLAN NMS', key: 'vlan_nms', width: 12 },
-      { header: 'VLAN Service', key: 'vlan_service', width: 14 },
-      { header: 'OS', key: 'operating_system', width: 15 },
-      { header: 'N° Série', key: 'serial_number', width: 20 },
-      { header: 'Statut', key: 'status', width: 12 },
-      { header: 'Dernier backup', key: 'last_backup', width: 20 },
-    ];
-
-    sheet.getRow(1).font = { bold: true };
-    sheet.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF4CAF50' } };
-
-    routers.forEach(r => {
-      sheet.addRow({
-        id: r.id,
-        name: r.name,
-        site: r.site?.name ?? 'N/A',
-        brand: r.brand,
-        model: r.model,
-        ip_nms: r.ip_nms,
-        ip_service: r.ip_service,
-        vlan_nms: r.vlan_nms,
-        vlan_service: r.vlan_service,
-        operating_system: r.operating_system,
-        serial_number: r.serial_number,
-        status: r.status ? 'Actif' : 'Inactif',
-        last_backup: r.last_backup ? new Date(r.last_backup).toLocaleDateString('fr-FR') : 'Jamais',
-      });
-    });
-    const buffer = await workbook.xlsx.writeBuffer();
-    return Buffer.from(buffer);
-  }
-
+  sheet.getColumn('interfaces_config').alignment = { wrapText: true, vertical: 'top' };
+  
+  const buffer = await workbook.xlsx.writeBuffer();
+  return Buffer.from(buffer);
+}
   private formatRouter(router: Router): any {
     return {
       id: router.id,

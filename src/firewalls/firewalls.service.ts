@@ -169,65 +169,74 @@ export class FirewallsService {
     };
   }
 
-  async exportToExcel(): Promise<Buffer> {
-    const firewalls = await this.firewallsRepository.find({
-      relations: ['site'],
-      order: { name: 'ASC' },
+ async exportToExcel(): Promise<Buffer> {
+  const firewalls = await this.firewallsRepository.find({
+    relations: ['site'],
+    order: { name: 'ASC' },
+  });
+
+  const workbook = new ExcelJS.Workbook();
+  const sheet = workbook.addWorksheet('Firewalls');
+
+  sheet.columns = [
+    { header: 'ID', key: 'id', width: 8 },
+    { header: 'Nom', key: 'name', width: 25 },
+    { header: 'Site', key: 'site', width: 20 },
+    { header: 'Type', key: 'firewall_type', width: 15 },
+    { header: 'Marque', key: 'brand', width: 15 },
+    { header: 'Modèle', key: 'model', width: 15 },
+    { header: 'IP NMS', key: 'ip_nms', width: 18 },
+    { header: 'IP Service', key: 'ip_service', width: 18 },
+    { header: 'VLAN NMS', key: 'vlan_nms', width: 12 },
+    { header: 'VLAN Service', key: 'vlan_service', width: 14 },
+    { header: 'Version firmware', key: 'firmware_version', width: 18 },
+    { header: 'N° Série', key: 'serial_number', width: 20 },
+    { header: 'Statut', key: 'status', width: 12 },
+    { header: 'HA', key: 'high_availability', width: 10 },
+    { header: 'Monitoring', key: 'monitoring_enabled', width: 12 },
+    { header: 'CPU (%)', key: 'cpu', width: 10 },
+    { header: 'Mémoire (%)', key: 'memory', width: 13 },
+    { header: 'Dernier backup', key: 'last_backup', width: 20 },
+    { header: 'Configuration (politiques)', key: 'configuration', width: 60 }, // ← nouvelle colonne
+  ];
+
+  sheet.getRow(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
+  sheet.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE53935' } };
+
+  firewalls.forEach(fw => {
+    // Tronquer la configuration si trop longue (Excel limite à 32767 caractères)
+    let configText = fw.configuration || '';
+    if (configText.length > 30000) configText = configText.substring(0, 30000) + '… (tronqué)';
+    
+    sheet.addRow({
+      id: fw.id,
+      name: fw.name,
+      site: fw.site?.name ?? 'N/A',
+      firewall_type: fw.firewall_type,
+      brand: fw.brand,
+      model: fw.model,
+      ip_nms: fw.ip_nms,
+      ip_service: fw.ip_service,
+      vlan_nms: fw.vlan_nms,
+      vlan_service: fw.vlan_service,
+      firmware_version: fw.firmware_version,
+      serial_number: fw.serial_number,
+      status: fw.status ? 'Actif' : 'Inactif',
+      high_availability: fw.high_availability ? 'Oui' : 'Non',
+      monitoring_enabled: fw.monitoring_enabled ? 'Oui' : 'Non',
+      cpu: fw.cpu,
+      memory: fw.memory,
+      last_backup: fw.last_backup ? new Date(fw.last_backup).toLocaleDateString('fr-FR') : 'Jamais',
+      configuration: configText,
     });
+  });
 
-    const workbook = new ExcelJS.Workbook();
-    const sheet = workbook.addWorksheet('Firewalls');
-
-    sheet.columns = [
-      { header: 'ID', key: 'id', width: 8 },
-      { header: 'Nom', key: 'name', width: 25 },
-      { header: 'Site', key: 'site', width: 20 },
-      { header: 'Type', key: 'firewall_type', width: 15 },
-      { header: 'Marque', key: 'brand', width: 15 },
-      { header: 'Modèle', key: 'model', width: 15 },
-      { header: 'IP NMS', key: 'ip_nms', width: 18 },
-      { header: 'IP Service', key: 'ip_service', width: 18 },
-      { header: 'VLAN NMS', key: 'vlan_nms', width: 12 },
-      { header: 'VLAN Service', key: 'vlan_service', width: 14 },
-      { header: 'Version firmware', key: 'firmware_version', width: 18 },
-      { header: 'N° Série', key: 'serial_number', width: 20 },
-      { header: 'Statut', key: 'status', width: 12 },
-      { header: 'HA', key: 'high_availability', width: 10 },
-      { header: 'Monitoring', key: 'monitoring_enabled', width: 12 },
-      { header: 'CPU (%)', key: 'cpu', width: 10 },
-      { header: 'Mémoire (%)', key: 'memory', width: 13 },
-      { header: 'Dernier backup', key: 'last_backup', width: 20 },
-    ];
-
-    sheet.getRow(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
-    sheet.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE53935' } };
-
-    firewalls.forEach(fw => {
-      sheet.addRow({
-        id: fw.id,
-        name: fw.name,
-        site: fw.site?.name ?? 'N/A',
-        firewall_type: fw.firewall_type,
-        brand: fw.brand,
-        model: fw.model,
-        ip_nms: fw.ip_nms,
-        ip_service: fw.ip_service,
-        vlan_nms: fw.vlan_nms,
-        vlan_service: fw.vlan_service,
-        firmware_version: fw.firmware_version,
-        serial_number: fw.serial_number,
-        status: fw.status ? 'Actif' : 'Inactif',
-        high_availability: fw.high_availability ? 'Oui' : 'Non',
-        monitoring_enabled: fw.monitoring_enabled ? 'Oui' : 'Non',
-        cpu: fw.cpu,
-        memory: fw.memory,
-        last_backup: fw.last_backup ? new Date(fw.last_backup).toLocaleDateString('fr-FR') : 'Jamais',
-      });
-    });
-
-    const buffer = await workbook.xlsx.writeBuffer();
-    return Buffer.from(buffer);
-  }
+  // Activer le retour à la ligne automatique pour la colonne de configuration
+  sheet.getColumn('configuration').alignment = { wrapText: true, vertical: 'top' };
+  
+  const buffer = await workbook.xlsx.writeBuffer();
+  return Buffer.from(buffer);
+}
 
   private formatFirewall(fw: Firewall): any {
     const toStatus = (v: boolean) => (v ? 'active' : 'danger');
