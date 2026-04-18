@@ -11,9 +11,10 @@ import { SwitchesService } from 'src/switchs/switches.service';
 import { Switch } from 'src/switchs/switch.entity';
 import { Router } from 'src/routers/router.entity';
 import { Firewall } from 'src/firewalls/firewall.entity';
+import { ConfigurationHistory } from 'src/config-history/config-history.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Site, PendingChange,Router, Firewall, Switch])],
+  imports: [TypeOrmModule.forFeature([Site, PendingChange,Router, Firewall, Switch,ConfigurationHistory])],
   controllers: [SitesController],
   providers: [SitesService,PendingChangeService, RoutersService, FirewallsService, SwitchesService],
   exports: [SitesService,PendingChangeService],
