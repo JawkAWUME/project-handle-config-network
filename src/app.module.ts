@@ -20,6 +20,7 @@ import { Router } from './routers/router.entity';
 import { Switch } from './switchs/switch.entity';
 import { ConfigurationHistory } from './config-history/config-history.entity';
 import { AccessLog } from './access-log/access-log.entity';
+import { PendingChangeModule } from './pending-change/pending-change.module';
 
 @Module({
   imports: [
@@ -86,6 +87,7 @@ import { AccessLog } from './access-log/access-log.entity';
     PassportModule,
     AuthModule,
     UsersModule,
+    PendingChangeModule,
     SitesModule,
     FirewallsModule,
     RoutersModule,
