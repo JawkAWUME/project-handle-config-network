@@ -5,11 +5,13 @@ import { SwitchesService } from './switches.service';
 import { SwitchesController } from './switches.controller';
 import { ConfigHistoryModule } from '../config-history/config-history.module';
 import { ConfigurationHistory } from '../config-history/config-history.entity';
+import { PendingChangeService } from 'src/pending-change/pending-changes.service';
+import { PendingChange } from 'src/pending-change/pending-change.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Switch, ConfigurationHistory])],
+  imports: [TypeOrmModule.forFeature([Switch, ConfigurationHistory,PendingChange])],
   controllers: [SwitchesController],
-  providers: [SwitchesService],
-  exports: [SwitchesService],
+  providers: [SwitchesService,PendingChangeService],
+  exports: [SwitchesService,PendingChangeService],
 })
 export class SwitchesModule {}
