@@ -13,9 +13,9 @@ import { RoutersModule } from 'src/routers/routers.module';
 
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Firewall, ConfigurationHistory,PendingChange]), RoutersModule],
+  imports: [TypeOrmModule.forFeature([Firewall, ConfigurationHistory,PendingChange])],
   controllers: [FirewallsController],
-  providers: [FirewallsService, PendingChangeService, RoutersService, SwitchesService, SitesService],
-  exports: [FirewallsService, PendingChangeService, RoutersService, SwitchesService, SitesService],
+  providers: [FirewallsService],
+  exports: [FirewallsService],
 })
 export class FirewallsModule {}

@@ -12,9 +12,9 @@ import { SitesModule } from 'src/sites/sites.module';
 import { SwitchesModule } from 'src/switchs/switch.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Router, ConfigurationHistory,PendingChange]), forwardRef(() => SwitchesModule)],
+  imports: [TypeOrmModule.forFeature([Router, ConfigurationHistory,PendingChange])],
   controllers: [RoutersController],
-  providers: [RoutersService,PendingChangeService],
-  exports: [RoutersService,PendingChangeService],
+  providers: [RoutersService],
+  exports: [RoutersService],
 })
 export class RoutersModule {}

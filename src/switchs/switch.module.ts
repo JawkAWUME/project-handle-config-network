@@ -10,9 +10,9 @@ import { PendingChange } from 'src/pending-change/pending-change.entity';
 import { RoutersModule } from 'src/routers/routers.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Switch, ConfigurationHistory,PendingChange]),  forwardRef(() => RoutersModule)],
+  imports: [TypeOrmModule.forFeature([Switch, ConfigurationHistory,PendingChange])],
   controllers: [SwitchesController],
-  providers: [SwitchesService,PendingChangeService],
-  exports: [SwitchesService,PendingChangeService],
+  providers: [SwitchesService],
+  exports: [SwitchesService],
 })
 export class SwitchesModule {}

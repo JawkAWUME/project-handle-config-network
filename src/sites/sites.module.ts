@@ -16,7 +16,7 @@ import { ConfigurationHistory } from 'src/config-history/config-history.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([Site, PendingChange,Router, Firewall, Switch,ConfigurationHistory])],
   controllers: [SitesController],
-  providers: [SitesService,PendingChangeService, RoutersService, FirewallsService, SwitchesService],
-  exports: [SitesService,PendingChangeService],
+  providers: [SitesService],
+  exports: [SitesService],
 })
 export class SitesModule {}
