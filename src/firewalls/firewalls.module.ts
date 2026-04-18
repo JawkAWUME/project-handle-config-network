@@ -13,7 +13,7 @@ import { SitesService } from 'src/sites/sites.service';
 @Module({
   imports: [TypeOrmModule.forFeature([Firewall, ConfigurationHistory,PendingChange])],
   controllers: [FirewallsController],
-  providers: [FirewallsService, PendingChangeService, RoutersService, SwitchesService,SitesService],
-  exports: [FirewallsService, PendingChangeService, RoutersService, SwitchesService,SitesService],
+  providers: [FirewallsService, PendingChangeService, RoutersService, SwitchesService, SitesService],
+  exports: [FirewallsService, PendingChangeService, RoutersService, SwitchesService, SitesService],
 })
 export class FirewallsModule {}
