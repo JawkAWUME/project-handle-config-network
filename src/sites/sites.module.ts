@@ -16,6 +16,6 @@ import { Firewall } from 'src/firewalls/firewall.entity';
   imports: [TypeOrmModule.forFeature([Site, PendingChange,Router, Firewall, Switch])],
   controllers: [SitesController],
   providers: [SitesService,PendingChangeService, RoutersService, FirewallsService, SwitchesService],
-  exports: [SitesService,PendingChangeService, RoutersService, FirewallsService, SwitchesService],
+  exports: [SitesService,PendingChangeService],
 })
 export class SitesModule {}
