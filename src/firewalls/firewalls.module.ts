@@ -9,9 +9,11 @@ import { PendingChange } from 'src/pending-change/pending-change.entity';
 import { RoutersService } from 'src/routers/routers.service';
 import { SwitchesService } from 'src/switchs/switches.service';
 import { SitesService } from 'src/sites/sites.service';
+import { RoutersModule } from 'src/routers/routers.module';
+
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Firewall, ConfigurationHistory,PendingChange])],
+  imports: [TypeOrmModule.forFeature([Firewall, ConfigurationHistory,PendingChange]), RoutersModule],
   controllers: [FirewallsController],
   providers: [FirewallsService, PendingChangeService, RoutersService, SwitchesService, SitesService],
   exports: [FirewallsService, PendingChangeService, RoutersService, SwitchesService, SitesService],
