@@ -114,7 +114,7 @@ export class SwitchesService {
 
   async getStatistics(): Promise<any> {
     const total = await this.switchesRepository.count();
-    const active = await this.switchesRepository.count({ where: { status: true } });
+    const active = await this.switchesRepository.count({ where: { status: 'active' } });
     const inactive = total - active;
 
     const byBrand = await this.switchesRepository

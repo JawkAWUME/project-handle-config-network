@@ -1,11 +1,5 @@
 import {
-  IsString,
-  IsNotEmpty,
-  IsOptional,
-  IsBoolean,
-  IsInt,
-  Min,
-  Max,
+  IsString, IsNotEmpty, IsOptional, IsInt, Min, Max,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -14,78 +8,37 @@ export class CreateSwitchDto {
   @IsNotEmpty()
   name: string;
 
-  @IsOptional()
-  @IsInt()
-  @Type(() => Number)
+  @IsOptional() @IsInt() @Type(() => Number)
   site_id?: number;
 
-  @IsOptional()
-  @IsString()
-  brand?: string;
+  @IsOptional() @IsString() brand?: string;
+  @IsOptional() @IsString() model?: string;
+  @IsOptional() @IsString() firmware_version?: string;
+  @IsOptional() @IsString() serial_number?: string;
+  @IsOptional() @IsString() asset_tag?: string;
+  @IsOptional() @IsString() ip_nms?: string;
+  @IsOptional() @IsString() ip_service?: string;
 
-  @IsOptional()
-  @IsString()
-  model?: string;
-
-  @IsOptional()
-  @IsString()
-  firmware_version?: string;
-
-  @IsOptional()
-  @IsString()
-  serial_number?: string;
-
-  @IsOptional()
-  @IsString()
-  asset_tag?: string;
-
-  @IsOptional()
-  @IsString()
-  ip_nms?: string;
-
-  @IsOptional()
-  @IsString()
-  ip_service?: string;
-
-  @IsOptional()
-  @IsInt()
-  @Min(1)
-  @Max(4094)
+  @IsOptional() @IsInt() @Min(1) @Max(4094) @Type(() => Number)
   vlan_nms?: number;
 
-  @IsOptional()
-  @IsInt()
-  @Min(1)
-  @Max(4094)
+  @IsOptional() @IsInt() @Min(1) @Max(4094) @Type(() => Number)
   vlan_service?: number;
 
-  @IsOptional()
-  @IsString()
-  username?: string;
+  @IsOptional() @IsString() username?: string;
+  @IsOptional() @IsString() password?: string;
 
-  @IsOptional()
-  @IsString()
-  password?: string;
+  @IsOptional() @IsInt() @Type(() => Number) ports_total?: number;
+  @IsOptional() @IsInt() @Type(() => Number) ports_used?: number;
 
-  @IsOptional()
-  @IsInt()
-  ports_total?: number;
+  @IsOptional() @IsString() configuration?: string;
 
-  @IsOptional()
-  @IsInt()
-  ports_used?: number;
+  // ✅ STRING — valeurs attendues : 'active' | 'danger' | 'warning'
+  // ❌ NE PAS utiliser @IsBoolean() : le frontend envoie des strings
+  @IsOptional() @IsString()
+  status?: string;
 
-  @IsOptional()
-  @IsString()
-  configuration?: string;
-
-  @IsOptional()
-  @IsBoolean()
-  status?: boolean;
-
-  @IsOptional()
-  @IsString()
-  notes?: string;
+  @IsOptional() @IsString() notes?: string;
 }
 
 export class UpdateSwitchDto extends CreateSwitchDto {}
