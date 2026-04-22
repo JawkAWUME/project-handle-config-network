@@ -95,7 +95,7 @@ export class CreateRouterDto {
   asset_tag?: string;
 
   @IsOptional()
-  @IsBoolean()
+  @IsString()
   status?: string;
 
   @IsOptional()
