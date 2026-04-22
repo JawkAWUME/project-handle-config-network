@@ -74,7 +74,7 @@ export class FirewallsService {
     const fw = this.firewallsRepository.create(data);
     const saved = await this.firewallsRepository.save(fw);
     const savedId = Array.isArray(saved) ? (saved[0] as Firewall).id : (saved as Firewall).id;
-    const loaded = await this.firewallsRepository.findOne({ where: { id: savedId }, relations: ['site'] });
+    const loaded = await this.firewallsRepository.findOne({ where: { id: savedId }, relations: ['site'] , cache: false });
     if (!loaded) throw new NotFoundException('Firewall introuvable.');
     return this.formatFirewall(loaded);
   }
@@ -91,7 +91,12 @@ export class FirewallsService {
 
     Object.assign(fw, data);
     await this.firewallsRepository.save(fw);
-    const loaded = await this.firewallsRepository.findOne({ where: { id }, relations: ['site'] });
+    const loaded = await this.firewallsRepository.findOne({ where: { id }, relations: ['site'], cache: false });
+  //   const loaded = await this.firewallsRepository
+  // .createQueryBuilder('fw')
+  // .leftJoinAndSelect('fw.site', 'site')
+  // .where('fw.id = :id', { id })
+  // .getOne();
     if (!loaded) throw new NotFoundException('Firewall introuvable.');
     return this.formatFirewall(loaded);
   }

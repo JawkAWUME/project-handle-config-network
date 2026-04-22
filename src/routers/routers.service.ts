@@ -89,7 +89,13 @@ export class RoutersService {
   }
     Object.assign(router, updateData);
     await this.routersRepository.save(router);
-    const loaded = await this.routersRepository.findOne({ where: { id }, relations: ['site'] });
+    const loaded = await this.routersRepository.findOne({ where: { id }, relations: ['site'], cache: false });
+  //   const loaded = await this.routersRepository
+  // .createQueryBuilder('r')
+  // .leftJoinAndSelect('r.site', 'site')
+  // .where('r.id = :id', { id })
+  // .getOne();
+
     if (!loaded) throw new NotFoundException('Routeur introuvable.');
     return this.formatRouter(loaded);
   }
