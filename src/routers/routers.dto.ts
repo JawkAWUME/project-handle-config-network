@@ -94,13 +94,11 @@ export class CreateRouterDto {
   @IsString()
   asset_tag?: string;
 
-  @IsOptional()
-  @IsString()
-  status?: string;
+  
 
   @IsOptional()
-  @IsString()
-  configuration?: string;
+  @IsIn(['active', 'inactive', 'warning'])   // ✅ valeurs autorisées
+  status?: string;
 
   @IsOptional()
   @IsString()
