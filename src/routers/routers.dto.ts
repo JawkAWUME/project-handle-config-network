@@ -96,7 +96,7 @@ export class CreateRouterDto {
 
   @IsOptional()
   @IsBoolean()
-  status?: boolean;
+  status?: string;
 
   @IsOptional()
   @IsString()

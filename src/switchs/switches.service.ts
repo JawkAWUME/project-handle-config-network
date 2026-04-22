@@ -66,7 +66,7 @@ export class SwitchesService {
     }
 
     const data: any = { ...dto, user_id: user.sub };
-    if (dto.status !== undefined) data.status = dto.status;
+    if (dto.status !== undefined) data.status = dto.status === 'active';
 
     const sw = this.switchesRepository.create(data);
     const saved = await this.switchesRepository.save(sw);
@@ -82,7 +82,11 @@ export class SwitchesService {
     const sw = await this.switchesRepository.findOne({ where: { id } });
     if (!sw) throw new NotFoundException('Switch introuvable.');
 
-    Object.assign(sw, dto);
+    const updateData: any = { ...dto };
+    if (dto.status !== undefined) {
+      updateData.status = dto.status === 'active';
+    }
+    Object.assign(sw, updateData);
     await this.switchesRepository.save(sw);
     const loaded = await this.switchesRepository.findOne({ where: { id }, relations: ['site'] });
     if (!loaded) throw new NotFoundException('Switch introuvable.');
@@ -114,7 +118,7 @@ export class SwitchesService {
 
   async getStatistics(): Promise<any> {
     const total = await this.switchesRepository.count();
-    const active = await this.switchesRepository.count({ where: { status: 'active' } });
+    const active = await this.switchesRepository.count({ where: { status: true } });
     const inactive = total - active;
 
     const byBrand = await this.switchesRepository

@@ -66,7 +66,7 @@ export class RoutersService {
     }
 
     const data: any = { ...dto, user_id: user.sub };
-    if (dto.status !== undefined) data.status = dto.status;
+    if (dto.status !== undefined) data.status = dto.status === 'active';
 
     const router = this.routersRepository.create(data);
     const saved = await this.routersRepository.save(router);
@@ -83,7 +83,11 @@ export class RoutersService {
     const router = await this.routersRepository.findOne({ where: { id } });
     if (!router) throw new NotFoundException('Routeur introuvable.');
 
-    Object.assign(router, dto);
+    const updateData: any = { ...dto };
+  if (dto.status !== undefined) {
+    updateData.status = dto.status === 'active';
+  }
+    Object.assign(router, updateData);
     await this.routersRepository.save(router);
     const loaded = await this.routersRepository.findOne({ where: { id }, relations: ['site'] });
     if (!loaded) throw new NotFoundException('Routeur introuvable.');

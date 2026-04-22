@@ -1,6 +1,11 @@
 import {
-  Entity, PrimaryGeneratedColumn, Column, ManyToOne,
-  CreateDateColumn, UpdateDateColumn, JoinColumn,
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { Site } from '../sites/site.entity';
 import { User } from '../users/user.entity';
@@ -10,56 +15,80 @@ export class Switch {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ type: 'varchar', length: 255 })
   name: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'int', nullable: true })
   site_id: number;
 
-  @ManyToOne(() => Site, { nullable: true, onDelete: 'SET NULL' })
+  @Column({ type: 'int', nullable: true })
+  user_id: number;
+
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  brand: string;
+
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  model: string;
+
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  firmware_version: string;
+
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  serial_number: string;
+
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  asset_tag: string;
+
+  @Column({ type: 'varchar', length: 45, nullable: true })
+  ip_nms: string;
+
+  @Column({ type: 'varchar', length: 45, nullable: true })
+  ip_service: string;
+
+  @Column({ type: 'int', nullable: true })
+  vlan_nms: number;
+
+  @Column({ type: 'int', nullable: true })
+  vlan_service: number;
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  username: string;
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  password: string; // encrypted
+
+  @Column({ type: 'int', default: 0 })
+  ports_total: number;
+
+  @Column({ type: 'int', default: 0 })
+  ports_used: number;
+
+  @Column({ type: 'text', nullable: true })
+  port_config: string;
+
+  @Column({ type: 'text', nullable: true })
+  configuration: string;
+
+  @Column({ type: 'timestamp', nullable: true })
+  last_backup: Date;
+
+  @Column({ type: 'boolean', default: true })
+  status: boolean;
+
+  @Column({ type: 'text', nullable: true })
+  notes: string;
+
+  @CreateDateColumn({ type: 'timestamp' })
+  created_at: Date;
+
+  @UpdateDateColumn({ type: 'timestamp' })
+  updated_at: Date;
+
+  @ManyToOne(() => Site)
   @JoinColumn({ name: 'site_id' })
   site: Site;
 
-  @Column({ nullable: true })
-  user_id: number;
-
-  @ManyToOne(() => User, { nullable: true })
+  @ManyToOne(() => User)
   @JoinColumn({ name: 'user_id' })
   user: User;
-
-  @Column({ nullable: true }) brand: string;
-  @Column({ nullable: true }) model: string;
-  @Column({ nullable: true }) firmware_version: string;
-  @Column({ nullable: true }) serial_number: string;
-  @Column({ nullable: true }) asset_tag: string;
-
-  @Column({ nullable: true }) ip_nms: string;
-  @Column({ nullable: true }) ip_service: string;
-  @Column({ nullable: true }) vlan_nms: number;
-  @Column({ nullable: true }) vlan_service: number;
-
-  @Column({ nullable: true }) username: string;
-  @Column({ nullable: true }) password: string;
-
-  @Column({ nullable: true }) ports_total: number;
-  @Column({ nullable: true }) ports_used: number;
-  @Column({ type: 'text', nullable: true }) configuration: string;
-  @Column({ type: 'text', nullable: true }) port_config: string;
-
-  // ✅ STRING — 'active' | 'danger' | 'warning'
-  // ❌ PAS boolean : le frontend et les DTO utilisent tous des strings
-  @Column({ type: 'varchar', length: 20, default: 'active' })
-  status: string;
-
-  @Column({ type: 'text', nullable: true }) notes: string;
-
-  @Column({ nullable: true }) last_backup: Date;
-  @Column({ nullable: true }) last_access_user: string;
-  @Column({ nullable: true }) last_access_time: Date;
-
-  @Column({ default: false }) monitoring_enabled: boolean;
-  @Column({ default: false }) poe_enabled: boolean;
-
-  @CreateDateColumn() created_at: Date;
-  @UpdateDateColumn() updated_at: Date;
 }
