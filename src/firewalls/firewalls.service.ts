@@ -91,12 +91,12 @@ export class FirewallsService {
 
     Object.assign(fw, data);
     await this.firewallsRepository.save(fw);
-    const loaded = await this.firewallsRepository.findOne({ where: { id }, relations: ['site'], cache: false });
-  //   const loaded = await this.firewallsRepository
-  // .createQueryBuilder('fw')
-  // .leftJoinAndSelect('fw.site', 'site')
-  // .where('fw.id = :id', { id })
-  // .getOne();
+    // const loaded = await this.firewallsRepository.findOne({ where: { id }, relations: ['site'], cache: false });
+    const loaded = await this.firewallsRepository
+    .createQueryBuilder('fw')
+    .leftJoinAndSelect('fw.site', 'site')
+    .where('fw.id = :id', { id })
+    .getOne();
     if (!loaded) throw new NotFoundException('Firewall introuvable.');
     return this.formatFirewall(loaded);
   }

@@ -88,13 +88,13 @@ export class SwitchesService {
     }
     Object.assign(sw, updateData);
     await this.switchesRepository.save(sw);
-    const loaded = await this.switchesRepository.findOne({ where: { id }, relations: ['site'], cache: false });
+    // const loaded = await this.switchesRepository.findOne({ where: { id }, relations: ['site'], cache: false });
 
-  //   const loaded = await this.switchesRepository
-  // .createQueryBuilder('s')
-  // .leftJoinAndSelect('s.site', 'site')
-  // .where('s.id = :id', { id })
-  // .getOne();
+    const loaded = await this.switchesRepository
+  .createQueryBuilder('s')
+  .leftJoinAndSelect('s.site', 'site')
+  .where('s.id = :id', { id })
+  .getOne();
     if (!loaded) throw new NotFoundException('Switch introuvable.');
     return this.formatSwitch(loaded!);
   }
