@@ -110,6 +110,14 @@ async function seed() {
     const routerRepo = AppDataSource.getRepository(Router);
     const swRepo = AppDataSource.getRepository(Switch);
 
+    // Vérifier si la base est déjà initialisée (présence d'au moins un site)
+    const siteCount = await siteRepo.count();
+    if (siteCount > 0) {
+      console.log('ℹ️ Base déjà initialisée, seed ignoré.');
+      await AppDataSource.destroy();
+      return;
+    }
+
     // 4) Users
     const passwordHash = await bcrypt.hash('password', 12);
 

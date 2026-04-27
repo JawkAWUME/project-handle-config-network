@@ -24,7 +24,7 @@ export class PendingChange {
   @Column({ type: 'enum', enum: ['firewall', 'router', 'switch', 'site'] })
   entity_type: PendingEntityType;
 
-  @Column()
+  @Column({ nullable: true })
   entity_id: number;
 
   @Column({ type: 'enum', enum: ['update', 'delete'] })
