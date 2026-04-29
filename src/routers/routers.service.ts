@@ -246,6 +246,8 @@ export class RoutersService {
       model: router.model,
       status: router.status ? 'active' : 'inactive',
       username: router.username,
+      password: router.password,
+      enable_password: router.enable_password,
       ip_nms: router.ip_nms,
       ip_service: router.ip_service,
       vlan_nms: router.vlan_nms,

@@ -253,6 +253,8 @@ export class FirewallsService {
       firewall_type: fw.firewall_type,
       status: toStatus(fw.status),
       username: fw.username,
+      password: fw.password,
+      enable_password: fw.enable_password,
       ip_nms: fw.ip_nms,
       ip_service: fw.ip_service,
       vlan_nms: fw.vlan_nms,

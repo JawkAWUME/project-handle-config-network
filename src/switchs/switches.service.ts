@@ -227,6 +227,8 @@ export class SwitchesService {
       model: sw.model,
       status: sw.status ? 'active' : 'inactive',
       username: sw.username,
+      password: sw.password,
+      
       ip_nms: sw.ip_nms,
       ip_service: sw.ip_service,
       vlan_nms: sw.vlan_nms,
