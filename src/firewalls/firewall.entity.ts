@@ -36,119 +36,119 @@ export enum ConnectionType {
 @Entity('firewalls')
 export class Firewall {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column()
-  name: string;
+  name!: string;
 
   @Column({ nullable: true })
-  site_id: number;
+  site_id!: number;
 
   @ManyToOne(() => Site, { nullable: true, eager: false })
   @JoinColumn({ name: 'site_id' })
-  site: Site;
+  site!: Site;
 
   @Column({ nullable: true })
-  user_id: number;
+  user_id!: number;
 
   @ManyToOne(() => User, { nullable: true, eager: false })
   @JoinColumn({ name: 'user_id' })
-  user: User;
+  user!: User;
 
   @Column({ type: 'enum', enum: FirewallType, nullable: true })
-  firewall_type: FirewallType;
+  firewall_type!: FirewallType;
 
   @Column({ nullable: true })
-  brand: string;
+  brand!: string;
 
   @Column({ nullable: true })
-  model: string;
+  model!: string;
 
   @Column({ nullable: true })
-  ip_nms: string;
+  ip_nms!: string;
 
   @Column({ nullable: true })
-  ip_service: string;
+  ip_service!: string;
 
   @Column({ nullable: true })
-  vlan_nms: number;
+  vlan_nms!: number;
 
   @Column({ nullable: true })
-  vlan_service: number;
+  vlan_service!: number;
 
   @Column({ nullable: true })
-  username: string;
+  username!: string;
 
   @Column({ nullable: true })
-  password: string;
+  password!: string;
 
   @Column({ nullable: true })
   @Exclude()
-  enable_password: string;
+  enable_password!: string;
 
   @Column({ nullable: true, type: 'text' })
-  configuration: string;
+  configuration!: string;
 
   @Column({ nullable: true, type: 'text' })
-  configuration_file: string;
+  configuration_file!: string;
 
   @Column({ nullable: true, type: 'json' })
-  security_policies: object[];
+  security_policies!: object[];
 
   @Column({ nullable: true, type: 'json' })
-  nat_rules: object[];
+  nat_rules!: object[];
 
   @Column({ nullable: true, type: 'json' })
   @Exclude()
-  vpn_configuration: object;
+  vpn_configuration!: object;
 
   @Column({ nullable: true, type: 'json' })
-  licenses: object[];
+  licenses!: object[];
 
   @Column({ nullable: true })
-  firmware_version: string;
+  firmware_version!: string;
 
   @Column({ nullable: true })
-  serial_number: string;
+  serial_number!: string;
 
   @Column({ nullable: true })
-  asset_tag: string;
+  asset_tag!: string;
 
   @Column({ type: 'enum', enum: EquipmentStatus, default: EquipmentStatus.ACTIVE })
-  status: EquipmentStatus;
+  status!: EquipmentStatus;
 
    @Column({ type: 'enum', enum: ConnectionType, nullable: true })
-  connection_type: ConnectionType;
+  connection_type!: ConnectionType;
 
   @Column({ default: false })
-  high_availability: boolean;
+  high_availability!: boolean;
 
   @Column({ nullable: true })
-  ha_peer_id: number;
+  ha_peer_id!: number;
 
   @Column({ default: false })
-  monitoring_enabled: boolean;
+  monitoring_enabled!: boolean;
 
   @Column({ nullable: true, type: 'timestamp' })
-  last_backup: Date;
+  last_backup!: Date;
 
   @Column({ nullable: true })
-  security_policies_count: number;
+  security_policies_count!: number;
 
   @Column({ nullable: true })
-  cpu: number;
+  cpu!: number;
 
   @Column({ nullable: true })
-  memory: number;
+  memory!: number;
 
   @Column({ nullable: true, type: 'text' })
-  notes: string;
+  notes!: string;
 
   @CreateDateColumn()
-  created_at: Date;
+  created_at!: Date;
 
   @UpdateDateColumn()
-  updated_at: Date;
+  updated_at!: Date;
 
   // Helpers (équivalent des accesseurs/méthodes du Model Laravel)
   get fullName(): string {
