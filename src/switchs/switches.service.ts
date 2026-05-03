@@ -28,7 +28,7 @@ export class SwitchesService {
       );
     }
     if (query.status && query.status !== 'all') {
-      qb.andWhere('s.status = :status', { status: query.status === 'active' });
+      qb.andWhere('s.status = :status', { status: EquipmentStatus.ACTIVE});
     }
     if (query.brand && query.brand !== 'all') {
       qb.andWhere('s.brand = :brand', { brand: query.brand });
@@ -66,7 +66,7 @@ export class SwitchesService {
     }
 
     const data: any = { ...dto, user_id: user.sub };
-    if (dto.status !== undefined) data.status = dto.status === 'active';
+    if (dto.status) data.status = dto.status as EquipmentStatus;
 
     const sw = this.switchesRepository.create(data);
     const saved = await this.switchesRepository.save(sw);
@@ -84,7 +84,7 @@ export class SwitchesService {
 
     const updateData: any = { ...dto };
     if (dto.status !== undefined) {
-      updateData.status = dto.status === 'active';
+      updateData.status = dto.status as EquipmentStatus;
     }
     Object.assign(sw, updateData);
     await this.switchesRepository.save(sw);
@@ -207,7 +207,10 @@ export class SwitchesService {
       firmware_version: s.firmware_version,
       ports: `${s.ports_used}/${s.ports_total}`,
       serial_number: s.serial_number,
-      status: s.status ? 'Actif' : 'Inactif',
+      status: s.status === EquipmentStatus.ACTIVE ? 'Actif'
+        : s.status === EquipmentStatus.INACTIVE ? 'Inactif'
+        : s.status === EquipmentStatus.WARNING ? 'Alerte'
+        : 'Danger',
       last_backup: s.last_backup ? new Date(s.last_backup).toLocaleDateString('fr-FR') : 'Jamais',
       port_config: configText,
     });
