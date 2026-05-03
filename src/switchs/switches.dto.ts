@@ -1,5 +1,6 @@
 import {
   IsString, IsNotEmpty, IsOptional, IsInt, Min, Max,
+  IsEnum,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { Column } from 'typeorm';
@@ -50,7 +51,13 @@ export class UpdateSwitchDto extends CreateSwitchDto {}
 
 export class SwitchQueryDto {
   search?: string;
-  status?: 'active' | 'inactive' | 'warning' | 'danger' | 'all';
+  @IsOptional()
+@IsEnum(EquipmentStatus)
+status?: EquipmentStatus;
+
+@IsOptional()
+@IsEnum(ConnectionType)
+connection_type?: ConnectionType;
   brand?: string;
   site_id?: number;
   limit?: number;

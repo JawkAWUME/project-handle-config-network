@@ -27,7 +27,7 @@ export class SwitchesService {
         { s: `%${query.search}%` },
       );
     }
-    if (query.status && query.status !== 'all') {
+    if (query.status) {
       qb.andWhere('s.status = :status', { status: EquipmentStatus.ACTIVE});
     }
     if (query.brand && query.brand !== 'all') {
