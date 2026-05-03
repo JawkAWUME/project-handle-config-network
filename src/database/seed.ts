@@ -178,21 +178,119 @@ console.log('✅ Firewalls créés');
     console.log('✅ Firewalls créés');
 
     // 7) Routers (ajout connection_type)
-  
-      routerRepo.save({ name: 'RT-HQ-CORE', site_id: sites[0].id, user_id: admin.id, brand: 'Cisco', model: 'ISR 4451', ip_nms: '10.0.1.1', ip_service: '192.168.1.2', vlan_nms: 100, vlan_service: 200, status: true, operating_system: 'IOS-XE 17.6', interfaces_count: 8, interfaces_up_count: 6, routing_protocols: ['OSPF', 'BGP'], serial_number: 'FTX1234A567', connection_type: 'fo' }),
-      routerRepo.save({ name: 'RT-DC-EDGE', site_id: sites[3].id, user_id: admin.id, brand: 'Juniper', model: 'MX204', ip_nms: '10.1.1.1', ip_service: '192.168.2.2', status: true, operating_system: 'JunOS 21.4', interfaces_count: 4, interfaces_up_count: 4, routing_protocols: ['BGP', 'IS-IS'], connection_type: 'both' }),
-      routerRepo.save({ name: 'RT-THS-01', site_id: sites[2].id, user_id: agent.id, brand: 'Cisco', model: 'ISR 1111', ip_nms: '10.3.1.1', status: true, operating_system: 'IOS-XE 16.12', interfaces_count: 4, interfaces_up_count: 3, connection_type: 'fh' }),
-   
-    console.log('✅ Routeurs créés');
+  const routers: DeepPartial<Router>[] = [
+  {
+    name: 'RT-HQ-CORE',
+    site_id: sites[0].id,
+    user_id: admin.id,
+    brand: 'Cisco',
+    model: 'ISR 4451',
+    ip_nms: '10.0.1.1',
+    ip_service: '192.168.1.2',
+    vlan_nms: 100,
+    vlan_service: 200,
+    status: EquipmentStatus.ACTIVE,
+    operating_system: 'IOS-XE 17.6',
+    interfaces_count: 8,
+    interfaces_up_count: 6,
+    routing_protocols: ['OSPF', 'BGP'],
+    serial_number: 'FTX1234A567',
+    connection_type: ConnectionType.FO,
+  },
+  {
+    name: 'RT-DC-EDGE',
+    site_id: sites[3].id,
+    user_id: admin.id,
+    brand: 'Juniper',
+    model: 'MX204',
+    ip_nms: '10.1.1.1',
+    ip_service: '192.168.2.2',
+    status: EquipmentStatus.ACTIVE,
+    operating_system: 'JunOS 21.4',
+    interfaces_count: 4,
+    interfaces_up_count: 4,
+    routing_protocols: ['BGP', 'IS-IS'],
+    connection_type: ConnectionType.BOTH,
+  },
+  {
+    name: 'RT-THS-01',
+    site_id: sites[2].id,
+    user_id: agent.id,
+    brand: 'Cisco',
+    model: 'ISR 1111',
+    ip_nms: '10.3.1.1',
+    status: EquipmentStatus.ACTIVE,
+    operating_system: 'IOS-XE 16.12',
+    interfaces_count: 4,
+    interfaces_up_count: 3,
+    connection_type: ConnectionType.FH,
+  },
+];
+
+await routerRepo.save(routers);
+console.log('✅ Routeurs créés');
 
     // 8) Switches (ajout connection_type)
    
-      swRepo.save({ name: 'SW-HQ-ACCESS-01', site_id: sites[0].id, user_id: agent.id, brand: 'Cisco', model: 'Catalyst 9300-48P', ip_nms: '10.0.2.1', vlan_nms: 100, status: true, firmware_version: '17.6.1', ports_total: 48, ports_used: 34, serial_number: 'FCW2345G890', connection_type: 'fo' }),
-      swRepo.save({ name: 'SW-HQ-CORE-01', site_id: sites[0].id, user_id: admin.id, brand: 'Cisco', model: 'Catalyst 9500-24Y4C', ip_nms: '10.0.2.2', vlan_nms: 100, status: true, firmware_version: '17.6.1', ports_total: 24, ports_used: 20, connection_type: 'both' }),
-      swRepo.save({ name: 'SW-DC-TOR-01', site_id: sites[3].id, user_id: admin.id, brand: 'Arista', model: '7050CX3-32S', ip_nms: '10.1.2.1', status: true, firmware_version: '4.28.0', ports_total: 32, ports_used: 28, connection_type: 'fo' }),
-      swRepo.save({ name: 'SW-PLT-01', site_id: sites[1].id, user_id: agent.id, brand: 'HP', model: 'Aruba 2930F', ip_nms: '10.2.2.1', status: false, ports_total: 24, ports_used: 0, connection_type: 'fh' }),
-   
-    console.log('✅ Switches créés');
+   const switches: DeepPartial<Switch>[] = [
+  {
+    name: 'SW-HQ-ACCESS-01',
+    site_id: sites[0].id,
+    user_id: agent.id,
+    brand: 'Cisco',
+    model: 'Catalyst 9300-48P',
+    ip_nms: '10.0.2.1',
+    vlan_nms: 100,
+    status: EquipmentStatus.ACTIVE,
+    firmware_version: '17.6.1',
+    ports_total: 48,
+    ports_used: 34,
+    serial_number: 'FCW2345G890',
+    connection_type: ConnectionType.FO,
+  },
+  {
+    name: 'SW-HQ-CORE-01',
+    site_id: sites[0].id,
+    user_id: admin.id,
+    brand: 'Cisco',
+    model: 'Catalyst 9500-24Y4C',
+    ip_nms: '10.0.2.2',
+    vlan_nms: 100,
+    status: EquipmentStatus.ACTIVE,
+    firmware_version: '17.6.1',
+    ports_total: 24,
+    ports_used: 20,
+    connection_type: ConnectionType.BOTH,
+  },
+  {
+    name: 'SW-DC-TOR-01',
+    site_id: sites[3].id,
+    user_id: admin.id,
+    brand: 'Arista',
+    model: '7050CX3-32S',
+    ip_nms: '10.1.2.1',
+    status: EquipmentStatus.ACTIVE,
+    firmware_version: '4.28.0',
+    ports_total: 32,
+    ports_used: 28,
+    connection_type: ConnectionType.FO,
+  },
+  {
+    name: 'SW-PLT-01',
+    site_id: sites[1].id,
+    user_id: agent.id,
+    brand: 'HP',
+    model: 'Aruba 2930F',
+    ip_nms: '10.2.2.1',
+    status: EquipmentStatus.INACTIVE,
+    ports_total: 24,
+    ports_used: 0,
+    connection_type: ConnectionType.FH,
+  },
+];
+
+await swRepo.save(switches);
+console.log('✅ Switches créés');
 
     await AppDataSource.destroy();
     console.log('\n🎉 Seeding terminé avec succès !');

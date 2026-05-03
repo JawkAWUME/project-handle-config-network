@@ -1,7 +1,7 @@
 import { Controller, Get, Request } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Firewall } from '../firewalls/firewall.entity';
+import { EquipmentStatus, Firewall } from '../firewalls/firewall.entity';
 import { Router } from '../routers/router.entity';
 import { Switch } from '../switchs/switch.entity';
 import { Site } from '../sites/site.entity';
@@ -35,11 +35,11 @@ export class DashboardController {
       totalSites, totalUsers,
     ] = await Promise.all([
       this.firewallsRepo.count(),
-      this.firewallsRepo.count({ where: { status: true } }),
+      this.firewallsRepo.count({ where: {  status: EquipmentStatus.ACTIVE } }),
       this.routersRepo.count(),
-      this.routersRepo.count({ where: { status: true } }),
+      this.routersRepo.count({ where: { status:  EquipmentStatus.ACTIVE } }),
       this.switchesRepo.count(),
-      this.switchesRepo.count({ where: { status: true } }),
+      this.switchesRepo.count({ where: { status:  EquipmentStatus.ACTIVE} }),
       this.sitesRepo.count(),
       this.usersRepo.count({ where: { is_active: true } }),
     ]);
