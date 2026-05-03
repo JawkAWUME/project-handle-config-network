@@ -27,9 +27,17 @@ export class FirewallsService {
         { s: `%${query.search}%` },
       );
     }
-    if (query.status && query.status !== 'all') {
-      qb.andWhere('fw.status = :status', { status: query.status  });
+   if (query.status && query.status !== 'all') {
+    let statusEnum: EquipmentStatus | null = null;
+    switch (query.status) {
+      case 'active': statusEnum = EquipmentStatus.ACTIVE; break;
+      case 'inactive': statusEnum = EquipmentStatus.INACTIVE; break;
+      case 'warning': statusEnum = EquipmentStatus.WARNING; break;
+      case 'danger': statusEnum = EquipmentStatus.DANGER; break;
     }
+    if (statusEnum) qb.andWhere('fw.status = :status', { status: statusEnum });
+  }
+
     if (query.brand && query.brand !== 'all') {
       qb.andWhere('fw.brand = :brand', { brand: query.brand });
     }
@@ -69,7 +77,15 @@ export class FirewallsService {
     }
 
     const data: any = { ...dto, user_id: user.sub };
-    if (dto.status) data.status = dto.status === 'active';
+    if (dto.status) {
+    switch (dto.status) {
+      case 'active': data.status = EquipmentStatus.ACTIVE; break;
+      case 'inactive': data.status = EquipmentStatus.INACTIVE; break;
+      case 'warning': data.status = EquipmentStatus.WARNING; break;
+      case 'danger': data.status = EquipmentStatus.DANGER; break;
+    }
+  }
+
 
     const fw = this.firewallsRepository.create(data);
     const saved = await this.firewallsRepository.save(fw);
@@ -234,7 +250,11 @@ export class FirewallsService {
       vlan_service: fw.vlan_service,
       firmware_version: fw.firmware_version,
       serial_number: fw.serial_number,
-      status: fw.status ? 'Actif' : 'Inactif',
+    status: fw.status === EquipmentStatus.ACTIVE ? 'Actif'
+      : fw.status === EquipmentStatus.INACTIVE ? 'Inactif'
+      : fw.status === EquipmentStatus.WARNING ? 'Alerte'
+      : 'Danger',
+
       high_availability: fw.high_availability ? 'Oui' : 'Non',
       monitoring_enabled: fw.monitoring_enabled ? 'Oui' : 'Non',
       cpu: fw.cpu,
