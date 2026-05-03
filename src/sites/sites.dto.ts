@@ -4,7 +4,7 @@ import { Type } from 'class-transformer';
 export class CreateSiteDto {
   @IsString()
   @IsNotEmpty()
-  name: string;
+  name!: string;
 
   @IsOptional() @IsString() code?: string;
   @IsOptional() @IsString() address?: string;

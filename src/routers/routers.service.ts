@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like } from 'typeorm';
-import { Router } from './router.entity';
+import { ConnectionType, Router } from './router.entity';
 import { CreateRouterDto, UpdateRouterDto, RouterQueryDto } from './routers.dto';
 import { ConfigurationHistory, ChangeType } from '../config-history/config-history.entity';
 import { UserRole } from '../users/user.entity';
@@ -244,7 +244,9 @@ export class RoutersService {
       name: router.name,
       brand: router.brand,
       model: router.model,
-      status: router.status ? 'active' : 'inactive',
+      status: router.status,
+      connection_type: router.connection_type,
+      connection_type_label: this.getConnectionTypeLabel(router.connection_type),
       username: router.username,
       password: router.password,
       enable_password: router.enable_password,
@@ -263,6 +265,16 @@ export class RoutersService {
       site_id: router.site_id,
       interfaces_config: router.interfaces_config,   // ← AJOUTÉ
     };
+  }
+
+  private getConnectionTypeLabel(type: ConnectionType | null): string {
+    if (!type) return 'Non défini';
+    const labels = {
+      [ConnectionType.FH]: 'Faisceau Hertzien',
+      [ConnectionType.FO]: 'Fibre Optique',
+      [ConnectionType.BOTH]: 'FH + FO',
+    };
+    return labels[type];
   }
 
   async updateInterfaces(id: number, config: string, user: any): Promise<Router> {

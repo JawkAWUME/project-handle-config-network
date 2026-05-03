@@ -19,38 +19,38 @@ export enum UserRole {
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column()
-  name: string;
+  name!: string;
 
   @Column({ unique: true })
-  email: string;
+  email!: string;
 
   @Column()
   @Exclude() // hidden dans les réponses (équivalent $hidden Laravel)
-  password: string;
+  password!: string;
 
   @Column({ type: 'enum', enum: UserRole, default: UserRole.VIEWER })
-  role: UserRole;
+  role!: UserRole;
 
   @Column({ nullable: true })
-  department: string;
+  department!: string;
 
   @Column({ nullable: true })
-  phone: string;
+  phone!: string;
 
   @Column({ default: true })
-  is_active: boolean;
+  is_active!: boolean;
 
   @Column({ nullable: true })
-  email_verified_at: Date;
+  email_verified_at!: Date;
 
   @CreateDateColumn()
-  created_at: Date;
+  created_at!: Date;
 
   @UpdateDateColumn()
-  updated_at: Date;
+  updated_at!: Date;
 
   // Helpers (équivalent des méthodes du model Laravel)
   hasRole(role: UserRole): boolean {

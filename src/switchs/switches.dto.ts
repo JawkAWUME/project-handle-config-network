@@ -35,8 +35,11 @@ export class CreateSwitchDto {
 
   // ✅ STRING — valeurs attendues : 'active' | 'danger' | 'warning'
   // ❌ NE PAS utiliser @IsBoolean() : le frontend envoie des strings
-  @IsOptional() @IsString()
-  status?: string;
+  @Column({ type: 'enum', enum: EquipmentStatus, default: EquipmentStatus.ACTIVE })
+  status: EquipmentStatus;
+
+   @Column({ type: 'enum', enum: ConnectionType, nullable: true })
+  connection_type: ConnectionType;
 
   @IsOptional() @IsString() notes?: string;
 }

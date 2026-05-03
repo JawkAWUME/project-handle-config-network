@@ -10,6 +10,20 @@ import {
 import { Site } from '../sites/site.entity';
 import { User } from '../users/user.entity';
 
+
+export enum EquipmentStatus {
+  ACTIVE = 'active',
+  INACTIVE = 'inactive',
+  WARNING = 'warning',
+  DANGER = 'danger'
+}
+
+export enum ConnectionType {
+  FH = 'fh',
+  FO = 'fo',
+  BOTH = 'both'
+}
+
 @Entity('switches')
 export class Switch {
   @PrimaryGeneratedColumn()
@@ -72,8 +86,11 @@ export class Switch {
   @Column({ type: 'timestamp', nullable: true })
   last_backup: Date;
 
-  @Column({ type: 'boolean', default: true })
-  status: boolean;
+  @Column({ type: 'enum', enum: EquipmentStatus, default: EquipmentStatus.ACTIVE })
+  status: EquipmentStatus;
+
+  @Column({ type: 'enum', enum: ConnectionType, nullable: true })
+  connection_type: ConnectionType;
 
   @Column({ type: 'text', nullable: true })
   notes: string;

@@ -11,6 +11,20 @@ import { Exclude } from 'class-transformer';
 import { Site } from '../sites/site.entity';
 import { User } from '../users/user.entity';
 
+
+export enum EquipmentStatus {
+  ACTIVE = 'active',
+  INACTIVE = 'inactive',
+  WARNING = 'warning',
+  DANGER = 'danger'
+}
+
+export enum ConnectionType {
+  FH = 'fh',
+  FO = 'fo',
+  BOTH = 'both'
+}
+
 @Entity('routers')
 export class Router {
   @PrimaryGeneratedColumn()
@@ -91,8 +105,11 @@ export class Router {
   @Column({ nullable: true })
   asset_tag: string;
 
-  @Column({ default: true })
-  status: boolean;
+  @Column({ type: 'enum', enum: EquipmentStatus, default: EquipmentStatus.ACTIVE })
+  status: EquipmentStatus;
+
+  @Column({ type: 'enum', enum: ConnectionType, nullable: true })
+  connection_type: ConnectionType;
 
   @Column({ nullable: true, type: 'timestamp' })
   last_backup: Date;
