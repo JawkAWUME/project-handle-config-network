@@ -34,8 +34,12 @@ export class CreateFirewallDto {
   @IsOptional() @IsBoolean() monitoring_enabled?: boolean;
 
   @IsOptional()
-  @IsIn(['active', 'warning', 'danger'])
-  status?: string;
+  @IsEnum(EquipmentStatus)
+  status?: EquipmentStatus;
+
+  @IsOptional()
+  @IsEnum(ConnectionType)
+  connection_type?: ConnectionType;
 
   @IsOptional() @IsString() configuration?: string;
   @IsOptional() @IsString() notes?: string;

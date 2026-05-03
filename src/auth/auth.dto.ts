@@ -4,29 +4,29 @@ import { IsEmail, IsNotEmpty, IsString, MinLength, IsIn, IsOptional } from 'clas
 export class LoginDto {
   @IsEmail({}, { message: 'Email invalide' })
   @IsNotEmpty()
-  email: string;
+  email!: string;
 
   @IsString()
   @IsNotEmpty()
-  password: string;
+  password!: string;
 }
 
 // Équivalent RegisterRequest (dans AuthController::register)
 export class RegisterDto {
   @IsString()
   @IsNotEmpty()
-  name: string;
+  name!: string;
 
   @IsEmail({}, { message: 'Email invalide' })
   @IsNotEmpty()
-  email: string;
+  email!: string;
 
   @IsString()
   @MinLength(6, { message: 'Le mot de passe doit contenir au moins 6 caractères' })
-  password: string;
+  password!: string;
 
   @IsIn(['admin', 'agent', 'viewer'])
-  role: string;
+  role!: string;
 
   @IsOptional()
   @IsString()

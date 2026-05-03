@@ -225,7 +225,10 @@ export class SwitchesService {
       name: sw.name,
       brand: sw.brand,
       model: sw.model,
-      status: sw.status ? 'active' : 'inactive',
+      // status: sw.status ? 'active' : 'inactive',
+      status: sw.status,
+      connection_type: fw.connection_type,
+      connection_type_label: this.getConnectionTypeLabel(fw.connection_type),
       username: sw.username,
       password: sw.password,
       
@@ -244,6 +247,16 @@ export class SwitchesService {
       site_id: sw.site_id,
       port_config: sw.port_config,   // ← AJOUTÉ
     };
+  }
+
+  private getConnectionTypeLabel(type: ConnectionType | null): string {
+    if (!type) return 'Non défini';
+    const labels = {
+      [ConnectionType.FH]: 'Faisceau Hertzien',
+      [ConnectionType.FO]: 'Fibre Optique',
+      [ConnectionType.BOTH]: 'FH + FO',
+    };
+    return labels[type];
   }
 
   async updatePorts(id: number, configuration: string, user: any): Promise<Switch> {

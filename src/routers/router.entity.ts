@@ -11,6 +11,20 @@ import { Exclude } from 'class-transformer';
 import { Site } from '../sites/site.entity';
 import { User } from '../users/user.entity';
 
+
+export enum EquipmentStatus {
+  ACTIVE = 'active',
+  INACTIVE = 'inactive',
+  WARNING = 'warning',
+  DANGER = 'danger'
+}
+
+export enum ConnectionType {
+  FH = 'fh',
+  FO = 'fo',
+  BOTH = 'both'
+}
+
 @Entity('routers')
 export class Router {
   @PrimaryGeneratedColumn()

@@ -9,8 +9,10 @@ import {
   IsObject,
   IsArray,
   IsIn,
+  IsEnum,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { EquipmentStatus, ConnectionType } from './router.entity';
 
 export class CreateRouterDto {
   @IsString()
@@ -94,11 +96,13 @@ export class CreateRouterDto {
   @IsString()
   asset_tag?: string;
 
-  
+  @IsOptional()
+  @IsEnum(EquipmentStatus)
+  status?: EquipmentStatus;
 
   @IsOptional()
-  @IsIn(['active', 'inactive', 'warning'])   // ✅ valeurs autorisées
-  status?: string;
+  @IsEnum(ConnectionType)
+  connection_type?: ConnectionType;
 
   @IsOptional()
   @IsString()

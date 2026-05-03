@@ -20,6 +20,19 @@ export enum FirewallType {
   OTHER = 'other',
 }
 
+export enum EquipmentStatus {
+  ACTIVE = 'active',
+  INACTIVE = 'inactive',
+  WARNING = 'warning',
+  DANGER = 'danger'
+}
+
+export enum ConnectionType {
+  FH = 'fh',
+  FO = 'fo',
+  BOTH = 'both'
+}
+
 @Entity('firewalls')
 export class Firewall {
   @PrimaryGeneratedColumn()
@@ -101,8 +114,11 @@ export class Firewall {
   @Column({ nullable: true })
   asset_tag: string;
 
-  @Column({ default: true })
-  status: boolean;
+  @Column({ type: 'enum', enum: EquipmentStatus, default: EquipmentStatus.ACTIVE })
+  status: EquipmentStatus;
+
+   @Column({ type: 'enum', enum: ConnectionType, nullable: true })
+  connection_type: ConnectionType;
 
   @Column({ default: false })
   high_availability: boolean;

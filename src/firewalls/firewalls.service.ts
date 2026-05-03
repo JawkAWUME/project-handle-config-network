@@ -251,7 +251,9 @@ export class FirewallsService {
       brand: fw.brand,
       model: fw.model,
       firewall_type: fw.firewall_type,
-      status: toStatus(fw.status),
+      status: fw.status,
+      connection_type: fw.connection_type,
+      connection_type_label: this.getConnectionTypeLabel(fw.connection_type),
       username: fw.username,
       password: fw.password,
       enable_password: fw.enable_password,
@@ -275,6 +277,16 @@ export class FirewallsService {
       site_id: fw.site_id,
       configuration: fw.configuration,   // ← AJOUTÉ pour stocker les politiques texte
     };
+  }
+
+  private getConnectionTypeLabel(type: ConnectionType | null): string {
+    if (!type) return 'Non défini';
+    const labels = {
+      [ConnectionType.FH]: 'Faisceau Hertzien',
+      [ConnectionType.FO]: 'Fibre Optique',
+      [ConnectionType.BOTH]: 'FH + FO',
+    };
+    return labels[type];
   }
 
   async updateSecurityPolicies(id: number, policies: string, user: any): Promise<Firewall> {
