@@ -13,82 +13,82 @@ import { User } from '../users/user.entity';
 @Entity('switches')
 export class Switch {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column({ type: 'varchar', length: 255 })
-  name: string;
+  name!: string;
 
   @Column({ type: 'int', nullable: true })
-  site_id: number;
+  site_id!: number;
 
   @Column({ type: 'int', nullable: true })
-  user_id: number;
+  user_id!: number;
 
   @Column({ type: 'varchar', length: 100, nullable: true })
-  brand: string;
+  brand!: string;
 
   @Column({ type: 'varchar', length: 100, nullable: true })
-  model: string;
+  model!: string;
 
   @Column({ type: 'varchar', length: 100, nullable: true })
-  firmware_version: string;
+  firmware_version!: string;
 
   @Column({ type: 'varchar', length: 100, nullable: true })
-  serial_number: string;
+  serial_number!: string;
 
   @Column({ type: 'varchar', length: 100, nullable: true })
-  asset_tag: string;
+  asset_tag!: string;
 
   @Column({ type: 'varchar', length: 45, nullable: true })
-  ip_nms: string;
+  ip_nms!: string;
 
   @Column({ type: 'varchar', length: 45, nullable: true })
-  ip_service: string;
+  ip_service!: string;
 
   @Column({ type: 'int', nullable: true })
-  vlan_nms: number;
+  vlan_nms!: number;
 
   @Column({ type: 'int', nullable: true })
-  vlan_service: number;
+  vlan_service!: number;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
-  username: string;
+  username!: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
-  password: string; // encrypted
+  password!: string; // encrypted
 
   @Column({ type: 'int', default: 0 })
-  ports_total: number;
+  ports_total!: number;
 
   @Column({ type: 'int', default: 0 })
-  ports_used: number;
+  ports_used!: number;
 
   @Column({ type: 'text', nullable: true })
-  port_config: string;
+  port_config!: string;
 
   @Column({ type: 'text', nullable: true })
-  configuration: string;
+  configuration!: string;
 
   @Column({ type: 'timestamp', nullable: true })
-  last_backup: Date;
+  last_backup!: Date;
 
   @Column({ type: 'boolean', default: true })
-  status: boolean;
+  status!: boolean;
 
   @Column({ type: 'text', nullable: true })
-  notes: string;
+  notes!: string;
 
   @CreateDateColumn({ type: 'timestamp' })
-  created_at: Date;
+  created_at!: Date;
 
   @UpdateDateColumn({ type: 'timestamp' })
-  updated_at: Date;
+  updated_at!: Date;
 
   @ManyToOne(() => Site)
   @JoinColumn({ name: 'site_id' })
-  site: Site;
+  site!: Site;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'user_id' })
-  user: User;
+  user!: User;
 }

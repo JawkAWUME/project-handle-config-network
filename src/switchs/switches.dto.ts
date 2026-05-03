@@ -6,7 +6,7 @@ import { Type } from 'class-transformer';
 export class CreateSwitchDto {
   @IsString()
   @IsNotEmpty()
-  name: string;
+  name!: string;
 
   @IsOptional() @IsInt() @Type(() => Number)
   site_id?: number;

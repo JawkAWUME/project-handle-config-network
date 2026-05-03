@@ -10,56 +10,56 @@ import {
 @Entity('sites')
 export class Site {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column()
-  name: string;
+  name!: string;
 
   @Column({ nullable: true })
-  code: string;
+  code!: string;
 
   @Column({ nullable: true })
-  address: string;
+  address!: string;
 
   @Column({ nullable: true })
-  city: string;
+  city!: string;
 
   @Column({ nullable: true })
-  country: string;
+  country!: string;
 
   @Column({ nullable: true })
-  postal_code: string;
+  postal_code!: string;
 
   @Column({ nullable: true })
-  phone: string;
+  phone!: string;
 
   @Column({ nullable: true })
-  technical_contact: string;
+  technical_contact!: string;
 
   @Column({ nullable: true })
-  technical_email: string;
+  technical_email!: string;
 
   @Column({ nullable: true, type: 'text' })
-  description: string;
+  description!: string;
 
   @Column({ nullable: true })
-  status: string;
+  status!: string;
 
   @Column({ nullable: true })
-  capacity: number;
+  capacity!: number;
 
   @Column({ nullable: true, type: 'text' })
-  notes: string;
+  notes!: string;
 
   @Column({ nullable: true, type: 'decimal', precision: 10, scale: 8 })
-  latitude: number;
+  latitude!: number;
 
   @Column({ nullable: true, type: 'decimal', precision: 11, scale: 8 })
-  longitude: number;
+  longitude!: number;
 
   @CreateDateColumn()
-  created_at: Date;
+  created_at!: Date;
 
   @UpdateDateColumn()
-  updated_at: Date;
+  updated_at!: Date;
 }

@@ -4,18 +4,18 @@ import { IsEmail, IsNotEmpty, IsString, IsIn, IsOptional, IsBoolean, MinLength }
 export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
-  name: string;
+  name!: string;
 
   @IsEmail()
   @IsNotEmpty()
-  email: string;
+  email!: string;
 
   @IsString()
   @MinLength(6)
-  password: string;
+  password!: string;
 
   @IsIn(['admin', 'agent', 'viewer'])
-  role: string;
+  role!: string;
 
   @IsOptional()
   @IsString()

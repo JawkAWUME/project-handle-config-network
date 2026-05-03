@@ -15,7 +15,7 @@ import { Type } from 'class-transformer';
 export class CreateRouterDto {
   @IsString()
   @IsNotEmpty()
-  name: string;
+  name!: string;
 
   @IsOptional()
   @IsInt()

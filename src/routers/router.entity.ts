@@ -14,100 +14,100 @@ import { User } from '../users/user.entity';
 @Entity('routers')
 export class Router {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column()
-  name: string;
+  name!: string;
 
   @Column({ nullable: true })
-  site_id: number;
+  site_id!: number;
 
   @ManyToOne(() => Site, { nullable: true, eager: false })
   @JoinColumn({ name: 'site_id' })
-  site: Site;
+  site!: Site;
 
   @Column({ nullable: true })
-  user_id: number;
+  user_id!: number;
 
   @ManyToOne(() => User, { nullable: true, eager: false })
   @JoinColumn({ name: 'user_id' })
-  user: User;
+  user!: User;
 
   @Column({ nullable: true })
-  brand: string;
+  brand!: string;
 
   @Column({ nullable: true })
-  model: string;
+  model!: string;
 
   @Column({ nullable: true, type: 'json' })
-  interfaces: object[];
+  interfaces!: object[];
 
   @Column({ nullable: true })
-  interfaces_count: number;
+  interfaces_count!: number;
 
   @Column({ nullable: true })
-  interfaces_up_count: number;
+  interfaces_up_count!: number;
 
   @Column({ nullable: true, type: 'json' })
-  routing_protocols: string[];
+  routing_protocols!: string[];
 
   @Column({ nullable: true })
-  management_ip: string;
+  management_ip!: string;
 
   @Column({ nullable: true })
-  ip_nms: string;
+  ip_nms!: string;
 
   @Column({ nullable: true })
-  ip_service: string;
+  ip_service!: string;
 
   @Column({ nullable: true })
-  vlan_nms: number;
+  vlan_nms!: number;
 
   @Column({ nullable: true })
-  vlan_service: number;
+  vlan_service!: number;
 
   @Column({ nullable: true })
-  username: string;
+  username!: string;
 
   @Column({ nullable: true })
-  password: string;
+  password!: string;
 
   @Column({ nullable: true })
   @Exclude()
-  enable_password: string;
+  enable_password!: string;
 
   @Column({ nullable: true, type: 'text' })
-  configuration: string;
+  configuration!: string;
 
   @Column({ nullable: true, type: 'text' })
-  configuration_file: string;
+  configuration_file!: string;
 
   @Column({ nullable: true })
-  operating_system: string;
+  operating_system!: string;
 
   @Column({ nullable: true })
-  serial_number: string;
+  serial_number!: string;
 
   @Column({ nullable: true })
-  asset_tag: string;
+  asset_tag!: string;
 
   @Column({ default: true })
-  status: boolean;
+  status!: boolean;
 
   @Column({ nullable: true, type: 'timestamp' })
-  last_backup: Date;
+  last_backup!: Date;
 
   @Column({ nullable: true, type: 'text' })
-  notes: string;
+  notes!: string;
 
   @CreateDateColumn()
-  created_at: Date;
+  created_at!: Date;
 
   @UpdateDateColumn()
-  updated_at: Date;
+  updated_at!: Date;
 
   @Column({ type: 'text', nullable: true })
-  interfaces_config: string;
+  interfaces_config!: string;
 
   get fullName(): string {
     return `${this.name} (${this.brand} ${this.model})`;
