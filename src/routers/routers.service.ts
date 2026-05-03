@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like } from 'typeorm';
-import { ConnectionType, Router } from './router.entity';
+import { ConnectionType, EquipmentStatus, Router } from './router.entity';
 import { CreateRouterDto, UpdateRouterDto, RouterQueryDto } from './routers.dto';
 import { ConfigurationHistory, ChangeType } from '../config-history/config-history.entity';
 import { UserRole } from '../users/user.entity';
@@ -157,7 +157,7 @@ export class RoutersService {
 
   async getStatistics(): Promise<any> {
     const total = await this.routersRepository.count();
-    const active = await this.routersRepository.count({ where: { status: true } });
+    const active = await this.routersRepository.count({ where: { status: EquipmentStatus.ACTIVE } });
     const inactive = total - active;
 
     const byBrand = await this.routersRepository

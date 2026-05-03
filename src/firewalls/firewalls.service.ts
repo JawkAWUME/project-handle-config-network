@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Firewall } from './firewall.entity';
+import { ConnectionType, EquipmentStatus, Firewall } from './firewall.entity';
 import { ConfigurationHistory, DeviceType } from '../config-history/config-history.entity';
 import { CreateFirewallDto, UpdateFirewallDto, FirewallQueryDto } from './firewalls.dto';
 import { UserRole } from '../users/user.entity';
@@ -28,7 +28,7 @@ export class FirewallsService {
       );
     }
     if (query.status && query.status !== 'all') {
-      qb.andWhere('fw.status = :status', { status: query.status === 'active' });
+      qb.andWhere('fw.status = :status', { status: query.status  });
     }
     if (query.brand && query.brand !== 'all') {
       qb.andWhere('fw.brand = :brand', { brand: query.brand });
@@ -87,8 +87,14 @@ export class FirewallsService {
     if (!fw) throw new NotFoundException('Firewall introuvable.');
 
     const data: any = { ...dto };
-    if (dto.status !== undefined) data.status = dto.status === 'active';
-
+    if (dto.status !== undefined) {
+      switch (dto.status) {
+        case 'active': data.status = EquipmentStatus.ACTIVE; break;
+        case 'inactive': data.status = EquipmentStatus.INACTIVE; break;
+        case 'warning': data.status = EquipmentStatus.WARNING; break;
+        case 'danger': data.status = EquipmentStatus.DANGER; break;
+      }
+    }
     Object.assign(fw, data);
     await this.firewallsRepository.save(fw);
     // const loaded = await this.firewallsRepository.findOne({ where: { id }, relations: ['site'], cache: false });
@@ -112,10 +118,12 @@ export class FirewallsService {
 
   async getStatistics(): Promise<any> {
     const total = await this.firewallsRepository.count();
-    const active = await this.firewallsRepository.count({ where: { status: true } });
-    const inactive = total - active;
+    const active = await this.firewallsRepository.count({ where: { status: EquipmentStatus.ACTIVE } });
+    const inactive = await this.firewallsRepository.count({ where: { status: EquipmentStatus.INACTIVE } });
+    const warning = await this.firewallsRepository.count({ where: { status: EquipmentStatus.WARNING } });
+    const danger = await this.firewallsRepository.count({ where: { status: EquipmentStatus.DANGER } });
     const haEnabled = await this.firewallsRepository.count({ where: { high_availability: true } });
-
+      
     const byBrand = await this.firewallsRepository
       .createQueryBuilder('fw')
       .select('fw.brand', 'brand')
@@ -139,7 +147,7 @@ export class FirewallsService {
 
     return {
       total,
-      by_status: { active, inactive },
+      by_status: { active, inactive , warning, danger },
       ha_enabled: haEnabled,
       needing_backup: needingBackup,
       by_brand: byBrand,
@@ -244,7 +252,7 @@ export class FirewallsService {
 }
 
   private formatFirewall(fw: Firewall): any {
-    const toStatus = (v: boolean) => (v ? 'active' : 'danger');
+   
     return {
       id: fw.id,
       name: fw.name,

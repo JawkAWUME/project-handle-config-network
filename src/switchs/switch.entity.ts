@@ -86,8 +86,11 @@ export class Switch {
   @Column({ type: 'timestamp', nullable: true })
   last_backup!: Date;
 
-  @Column({ type: 'boolean', default: true })
-  status!: boolean;
+  @Column({ type: 'enum', enum: EquipmentStatus, default: EquipmentStatus.ACTIVE })
+  status!: EquipmentStatus;
+   
+  @Column({ type: 'enum', enum: ConnectionType, nullable: true })
+  connection_type!: ConnectionType;
 
   @Column({ type: 'text', nullable: true })
   notes!: string;

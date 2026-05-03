@@ -105,8 +105,11 @@ export class Router {
   @Column({ nullable: true })
   asset_tag!: string;
 
-  @Column({ default: true })
-  status!: boolean;
+  @Column({ type: 'enum', enum: EquipmentStatus, default: EquipmentStatus.ACTIVE })
+    status!: EquipmentStatus;
+  
+  @Column({ type: 'enum', enum: ConnectionType, nullable: true })
+  connection_type!: ConnectionType;
 
   @Column({ nullable: true, type: 'timestamp' })
   last_backup!: Date;

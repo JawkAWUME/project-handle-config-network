@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Switch } from './switch.entity';
+import { ConnectionType, EquipmentStatus, Switch } from './switch.entity';
 import { CreateSwitchDto, UpdateSwitchDto, SwitchQueryDto } from './switches.dto';
 import { ConfigurationHistory, ChangeType } from '../config-history/config-history.entity';
 import { UserRole } from '../users/user.entity';
@@ -124,7 +124,7 @@ export class SwitchesService {
 
   async getStatistics(): Promise<any> {
     const total = await this.switchesRepository.count();
-    const active = await this.switchesRepository.count({ where: { status: true } });
+    const active = await this.switchesRepository.count({ where: { status: EquipmentStatus.ACTIVE } });
     const inactive = total - active;
 
     const byBrand = await this.switchesRepository
@@ -227,8 +227,8 @@ export class SwitchesService {
       model: sw.model,
       // status: sw.status ? 'active' : 'inactive',
       status: sw.status,
-      connection_type: fw.connection_type,
-      connection_type_label: this.getConnectionTypeLabel(fw.connection_type),
+      connection_type: sw.connection_type,
+      connection_type_label: this.getConnectionTypeLabel(sw.connection_type),
       username: sw.username,
       password: sw.password,
       

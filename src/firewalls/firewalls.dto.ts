@@ -1,13 +1,15 @@
 import {
   IsString, IsNotEmpty, IsOptional, IsBoolean, IsNumber,
   IsIn, IsInt, Min, Max,
+  IsEnum,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { EquipmentStatus, ConnectionType } from './firewall.entity';
 
 export class CreateFirewallDto {
   @IsString()
   @IsNotEmpty()
-  name: string;
+  name!: string;
 
   @IsOptional() @IsInt() @Type(() => Number) site_id?: number;
   @IsOptional() @IsString() brand?: string;
