@@ -50,7 +50,7 @@ export class UpdateSwitchDto extends CreateSwitchDto {}
 
 export class SwitchQueryDto {
   search?: string;
-  status?: string;
+  status?: 'active' | 'inactive' | 'warning' | 'danger' | 'all';
   brand?: string;
   site_id?: number;
   limit?: number;
