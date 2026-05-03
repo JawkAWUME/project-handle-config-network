@@ -2,6 +2,8 @@ import {
   IsString, IsNotEmpty, IsOptional, IsInt, Min, Max,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { Column } from 'typeorm';
+import { EquipmentStatus, ConnectionType } from './switch.entity';
 
 export class CreateSwitchDto {
   @IsString()
@@ -36,10 +38,10 @@ export class CreateSwitchDto {
   // ✅ STRING — valeurs attendues : 'active' | 'danger' | 'warning'
   // ❌ NE PAS utiliser @IsBoolean() : le frontend envoie des strings
   @Column({ type: 'enum', enum: EquipmentStatus, default: EquipmentStatus.ACTIVE })
-  status: EquipmentStatus;
+  status!: EquipmentStatus;
 
    @Column({ type: 'enum', enum: ConnectionType, nullable: true })
-  connection_type: ConnectionType;
+  connection_type!: ConnectionType;
 
   @IsOptional() @IsString() notes?: string;
 }
