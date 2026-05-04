@@ -4,6 +4,7 @@ import { config } from 'dotenv';
 
 config();
 
+const isLocal = !process.env.DATABASE_URL?.includes('render.com');
 export default new DataSource({
   type: 'postgres',
   url: process.env.DATABASE_URL,
@@ -11,5 +12,5 @@ export default new DataSource({
   migrations: ['src/database/migrations/*.ts'],
   synchronize: false,
   logging: true,
-  ssl: { rejectUnauthorized: false },
+  ssl: isLocal ? false :{ rejectUnauthorized: false },
 });
