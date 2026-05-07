@@ -9,6 +9,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { Client, ConnectConfig } from 'ssh2';
 import { UseGuards } from '@nestjs/common';
+import { transport } from 'winston';
 // import { WsJwtGuard } from '../auth/ws-jwt.guard'; // à brancher selon ton auth
 
 interface SshSessionMeta {
@@ -18,7 +19,9 @@ interface SshSessionMeta {
 
 @WebSocketGateway({
   namespace: '/ssh',
-  cors: { origin: '*' }, // ← restreindre en prod
+  cors: { origin: '*', methods: ['GET', 'POST'], credentials: false }, 
+  allowEIO3: true, // ← restreindre en prod
+  transports: ['polling','websocket'], // ← restreindre en prod
 })
 export class SshGateway implements OnGatewayDisconnect {
   @WebSocketServer() server!: Server;

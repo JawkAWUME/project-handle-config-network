@@ -21,6 +21,7 @@ import { Switch } from './switchs/switch.entity';
 import { ConfigurationHistory } from './config-history/config-history.entity';
 import { AccessLog } from './access-log/access-log.entity';
 import { PendingChangeModule } from './pending-change/pending-change.module';
+import { SshModule } from './ssh/ssh.module';
 
 @Module({
   imports: [
@@ -92,6 +93,7 @@ import { PendingChangeModule } from './pending-change/pending-change.module';
     FirewallsModule,
     RoutersModule,
     SwitchesModule,
+    SshModule,
     DashboardModule,
   ],
 })

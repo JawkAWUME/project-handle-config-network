@@ -5,6 +5,7 @@ import * as winston from 'winston';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filters/http-exception.filter';
 import { ValidationPipe, BadRequestException } from '@nestjs/common';
+import { IoAdapter } from '@nestjs/platform-socket.io';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -39,12 +40,12 @@ async function bootstrap() {
   );
   app.use(compression());
   app.enableCors({
-    origin: process.env.FRONTEND_URL ?? 'https://network-manager-ui.vercel.app',
+    origin: '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    credentials: true,
+    credentials: false,
     allowedHeaders: 'Content-Type, Accept, Authorization',
   });
-
+  app.useWebSocketAdapter(new IoAdapter(app));
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
