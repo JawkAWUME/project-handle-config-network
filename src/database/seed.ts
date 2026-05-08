@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-import { DataSource, DeepPartial} from 'typeorm';
+import { DataSource, DeepPartial } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 
 import { User, UserRole } from '../users/user.entity';
@@ -12,7 +12,6 @@ import { ConnectionType, EquipmentStatus, Firewall, FirewallType } from '../fire
 import { Router } from '../routers/router.entity';
 import { Switch } from '../switchs/switch.entity';
 
-const isProd = process.env.APP_ENV === 'production';
 const force = process.env.SEED_FORCE === 'true';
 
 const AppDataSource = new DataSource({
@@ -20,10 +19,20 @@ const AppDataSource = new DataSource({
   url: process.env.DATABASE_URL,
   entities: [User, Site, Firewall, Router, Switch],
   synchronize: false,
-  ssl: { rejectUnauthorized: false },
+  ssl: process.env.DATABASE_URL?.includes('render.com')
+    ? { rejectUnauthorized: false }
+    : false,
+  extra: {
+    max: 5,                             // limite de connexions simultanées
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 10000,     // ⏱️ attendre jusqu'à 10s avant d'abandonner
+    keepAlive: true,
+  },
+  connectTimeoutMS: 15000,             // timeout global TypeORM
 });
 
 async function seed() {
+  console.log('🔧 DATABASE_URL =', process.env.DATABASE_URL ? '***' : 'NON DÉFINIE');
   try {
     await AppDataSource.initialize();
     console.log('✅ Connexion DB établie');
@@ -34,10 +43,10 @@ async function seed() {
     const routerRepo = AppDataSource.getRepository(Router);
     const swRepo = AppDataSource.getRepository(Switch);
 
-    // 🔥 RESET OPTIONNEL (prod safe si SEED_FORCE=true)
+    // 🔥 RESET OPTIONNEL (uniquement avec SEED_FORCE=true)
     if (force) {
       await AppDataSource.query(`
-        TRUNCATE users, sites, firewalls, routers, switches 
+        TRUNCATE users, sites, firewalls, routers, switches
         RESTART IDENTITY CASCADE
       `);
       console.log('🔥 DB reset complet');
@@ -46,7 +55,6 @@ async function seed() {
     // ================= USERS =================
     if (await userRepo.count() === 0) {
       const passwordHash = await bcrypt.hash('password', 12);
-
       await userRepo.save([
         userRepo.create({
           name: 'Administrateur',
@@ -89,7 +97,6 @@ async function seed() {
           is_active: false,
         }),
       ]);
-
       console.log('✅ Users créés (5)');
     } else {
       console.log('⏭️ Users déjà présents');
@@ -99,84 +106,82 @@ async function seed() {
 
     // ================= SITES =================
     let sites: DeepPartial<Site>[] = [];
-
     if (await siteRepo.count() === 0) {
       sites = await siteRepo.save([
-  {
-    name: 'Siège Social Dakar',
-    code: 'HQ-DKR',
-    city: 'Dakar',
-    region: 'dakar',
-    country: 'Sénégal',
-    address: '12 Av. Léopold Sédar Senghor',
-    postal_code: '10000',
-    latitude: 14.7167,    // ← ajout
-    longitude: -17.4677,  // ← ajout
-    phone: '+221 33 123 45 67',
-    technical_contact: 'Admin IT',
-    technical_email: 'it@company.sn',
-    status: 'active',
-    description: 'Bâtiment principal – direction générale',
-  },
-  {
-    name: 'Agence Plateau',
-    code: 'AGT-PLT',
-    city: 'Dakar',
-    region: 'dakar',
-    country: 'Sénégal',
-    address: '5 Rue Carnot',
-    postal_code: '10001',
-    latitude: 14.6833,
-    longitude: -17.4833,
-    phone: '+221 33 234 56 78',
-    technical_contact: 'Technicien A',
-    technical_email: 'tech.plateau@company.sn',
-    status: 'active',
-  },
-  {
-    name: 'Agence Thiès',
-    code: 'AGT-THS',
-    city: 'Thiès',
-    region: 'thies',
-    country: 'Sénégal',
-    address: '10 Rue de la Gare',
-    postal_code: '21000',
-    latitude: 14.7911,
-    longitude: -16.9356,
-    phone: '+221 33 345 67 89',
-    technical_contact: 'Technicien B',
-    technical_email: 'tech.thies@company.sn',
-    status: 'active',
-  },
-  {
-    name: 'DataCenter Principal',
-    code: 'DC-MAIN',
-    city: 'Dakar',
-    region: 'dakar',
-    country: 'Sénégal',
-    address: 'Rue de la Technologie, Zone Industrielle',
-    postal_code: '10002',
-    latitude: 14.7500,
-    longitude: -17.4000,
-    status: 'active',
-    capacity: 200,
-    technical_contact: 'DBA Team',
-    technical_email: 'dba@datacenter.sn',
-  },
-  {
-    name: 'Agence Saint‑Louis',
-    code: 'AGT-SL',
-    city: 'Saint‑Louis',
-    region: 'saint-louis',
-    country: 'Sénégal',
-    address: '38 Avenue Faidherbe',
-    postal_code: '32000',
-    latitude: 16.0179,
-    longitude: -16.4896,
-    status: 'inactive',
-  }
-]);
-
+        {
+          name: 'Siège Social Dakar',
+          code: 'HQ-DKR',
+          city: 'Dakar',
+          region: 'dakar',
+          country: 'Sénégal',
+          address: '12 Av. Léopold Sédar Senghor',
+          postal_code: '10000',
+          latitude: 14.7167,
+          longitude: -17.4677,
+          phone: '+221 33 123 45 67',
+          technical_contact: 'Admin IT',
+          technical_email: 'it@company.sn',
+          status: 'active',
+          description: 'Bâtiment principal – direction générale',
+        },
+        {
+          name: 'Agence Plateau',
+          code: 'AGT-PLT',
+          city: 'Dakar',
+          region: 'dakar',
+          country: 'Sénégal',
+          address: '5 Rue Carnot',
+          postal_code: '10001',
+          latitude: 14.6833,
+          longitude: -17.4833,
+          phone: '+221 33 234 56 78',
+          technical_contact: 'Technicien A',
+          technical_email: 'tech.plateau@company.sn',
+          status: 'active',
+        },
+        {
+          name: 'Agence Thiès',
+          code: 'AGT-THS',
+          city: 'Thiès',
+          region: 'thies',
+          country: 'Sénégal',
+          address: '10 Rue de la Gare',
+          postal_code: '21000',
+          latitude: 14.7911,
+          longitude: -16.9356,
+          phone: '+221 33 345 67 89',
+          technical_contact: 'Technicien B',
+          technical_email: 'tech.thies@company.sn',
+          status: 'active',
+        },
+        {
+          name: 'DataCenter Principal',
+          code: 'DC-MAIN',
+          city: 'Dakar',
+          region: 'dakar',
+          country: 'Sénégal',
+          address: 'Rue de la Technologie, Zone Industrielle',
+          postal_code: '10002',
+          latitude: 14.7500,
+          longitude: -17.4000,
+          status: 'active',
+          capacity: 200,
+          technical_contact: 'DBA Team',
+          technical_email: 'dba@datacenter.sn',
+        },
+        {
+          name: 'Agence Saint‑Louis',
+          code: 'AGT-SL',
+          city: 'Saint‑Louis',
+          region: 'saint-louis',
+          country: 'Sénégal',
+          address: '38 Avenue Faidherbe',
+          postal_code: '32000',
+          latitude: 16.0179,
+          longitude: -16.4896,
+          status: 'inactive',
+        }
+      ]);
       console.log('✅ Sites créés (5)');
     } else {
       sites = await siteRepo.find();
@@ -185,7 +190,7 @@ async function seed() {
 
     // ================= FIREWALLS =================
     if (await fwRepo.count() === 0) {
-      const firewalls: DeepPartial<Firewall>[] = [
+      await fwRepo.save([
         {
           name: 'FW-HQ-01',
           site_id: sites[0].id,
@@ -277,9 +282,7 @@ async function seed() {
           connection_type: ConnectionType.FO,
           notes: 'Agence Saint‑Louis – avertissement',
         },
-      ];
-
-      await fwRepo.save(firewalls);
+      ]);
       console.log('✅ Firewalls créés (4)');
     } else {
       console.log('⏭️ Firewalls déjà présents');
@@ -287,7 +290,7 @@ async function seed() {
 
     // ================= ROUTERS =================
     if (await routerRepo.count() === 0) {
-      const routers: DeepPartial<Router>[] = [
+      await routerRepo.save([
         {
           name: 'RT-HQ-CORE',
           site_id: sites[0].id,
@@ -389,9 +392,7 @@ async function seed() {
           connection_type: ConnectionType.FO,
           notes: 'Routeur interne data center',
         },
-      ];
-
-      await routerRepo.save(routers);
+      ]);
       console.log('✅ Routeurs créés (5)');
     } else {
       console.log('⏭️ Routeurs déjà présents');
@@ -399,7 +400,7 @@ async function seed() {
 
     // ================= SWITCHES =================
     if (await swRepo.count() === 0) {
-      const switches: DeepPartial<Switch>[] = [
+      await swRepo.save([
         {
           name: 'SW-HQ-ACCESS-01',
           site_id: sites[0].id,
@@ -517,9 +518,7 @@ async function seed() {
           connection_type: ConnectionType.FO,
           notes: 'Switch agence Saint‑Louis – alerte',
         },
-      ];
-
-      await swRepo.save(switches);
+      ]);
       console.log('✅ Switches créés (7)');
     } else {
       console.log('⏭️ Switches déjà présents');
