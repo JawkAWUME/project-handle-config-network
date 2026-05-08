@@ -51,7 +51,9 @@ import { SshModule } from './ssh/ssh.module';
             extra: {                                   // ← nouveau
               max: 20,                                 // max connexions dans le pool
               idleTimeoutMillis: 30000,
+              connectionTimeoutMillis: 30000,
             },
+            connectTimeoutMS: 15000
           };
         }
         
