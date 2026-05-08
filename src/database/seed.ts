@@ -25,7 +25,7 @@ const AppDataSource = new DataSource({
   extra: {
     max: 5,                             // limite de connexions simultanées
     idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 10000,     // ⏱️ attendre jusqu'à 10s avant d'abandonner
+    connectionTimeoutMillis: 10000,     // attendre jusqu'à 10s avant d'abandonner
     keepAlive: true,
   },
   connectTimeoutMS: 15000,             // timeout global TypeORM
@@ -46,7 +46,7 @@ async function seed() {
     // 🔥 RESET OPTIONNEL (uniquement avec SEED_FORCE=true)
     if (force) {
       await AppDataSource.query(`
-        TRUNCATE users, sites, firewalls, routers, switches
+        TRUNCATE users, sites, firewalls, routers, switches 
         RESTART IDENTITY CASCADE
       `);
       console.log('🔥 DB reset complet');
@@ -55,6 +55,7 @@ async function seed() {
     // ================= USERS =================
     if (await userRepo.count() === 0) {
       const passwordHash = await bcrypt.hash('password', 12);
+
       await userRepo.save([
         userRepo.create({
           name: 'Administrateur',
@@ -97,6 +98,7 @@ async function seed() {
           is_active: false,
         }),
       ]);
+
       console.log('✅ Users créés (5)');
     } else {
       console.log('⏭️ Users déjà présents');
@@ -106,6 +108,7 @@ async function seed() {
 
     // ================= SITES =================
     let sites: DeepPartial<Site>[] = [];
+
     if (await siteRepo.count() === 0) {
       sites = await siteRepo.save([
         {
@@ -180,8 +183,9 @@ async function seed() {
           latitude: 16.0179,
           longitude: -16.4896,
           status: 'inactive',
-        }
+        },
       ]);
+
       console.log('✅ Sites créés (5)');
     } else {
       sites = await siteRepo.find();
@@ -190,7 +194,7 @@ async function seed() {
 
     // ================= FIREWALLS =================
     if (await fwRepo.count() === 0) {
-      await fwRepo.save([
+      const firewalls: DeepPartial<Firewall>[] = [
         {
           name: 'FW-HQ-01',
           site_id: sites[0].id,
@@ -282,7 +286,9 @@ async function seed() {
           connection_type: ConnectionType.FO,
           notes: 'Agence Saint‑Louis – avertissement',
         },
-      ]);
+      ];
+
+      await fwRepo.save(firewalls);
       console.log('✅ Firewalls créés (4)');
     } else {
       console.log('⏭️ Firewalls déjà présents');
@@ -290,7 +296,7 @@ async function seed() {
 
     // ================= ROUTERS =================
     if (await routerRepo.count() === 0) {
-      await routerRepo.save([
+      const routers: DeepPartial<Router>[] = [
         {
           name: 'RT-HQ-CORE',
           site_id: sites[0].id,
@@ -392,7 +398,9 @@ async function seed() {
           connection_type: ConnectionType.FO,
           notes: 'Routeur interne data center',
         },
-      ]);
+      ];
+
+      await routerRepo.save(routers);
       console.log('✅ Routeurs créés (5)');
     } else {
       console.log('⏭️ Routeurs déjà présents');
@@ -400,7 +408,7 @@ async function seed() {
 
     // ================= SWITCHES =================
     if (await swRepo.count() === 0) {
-      await swRepo.save([
+      const switches: DeepPartial<Switch>[] = [
         {
           name: 'SW-HQ-ACCESS-01',
           site_id: sites[0].id,
@@ -417,7 +425,7 @@ async function seed() {
           serial_number: 'FCW2345G890',
           status: EquipmentStatus.ACTIVE,
           connection_type: ConnectionType.FO,
-          notes: 'Switch d\'accès principal',
+          notes: "Switch d'accès principal",
         },
         {
           name: 'SW-HQ-CORE-01',
@@ -518,7 +526,9 @@ async function seed() {
           connection_type: ConnectionType.FO,
           notes: 'Switch agence Saint‑Louis – alerte',
         },
-      ]);
+      ];
+
+      await swRepo.save(switches);
       console.log('✅ Switches créés (7)');
     } else {
       console.log('⏭️ Switches déjà présents');
