@@ -40,7 +40,7 @@ async function bootstrap() {
   );
   app.use(compression());
   app.enableCors({
-    origin: '*',
+    origin: process.env.FRONTEND_URL ?? 'https://network-manager-ui.vercel.app',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: false,
     allowedHeaders: 'Content-Type, Accept, Authorization',
