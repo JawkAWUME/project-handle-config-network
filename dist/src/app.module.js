@@ -27,6 +27,7 @@ const switch_entity_1 = require("./switchs/switch.entity");
 const config_history_entity_1 = require("./config-history/config-history.entity");
 const access_log_entity_1 = require("./access-log/access-log.entity");
 const pending_change_module_1 = require("./pending-change/pending-change.module");
+const ssh_module_1 = require("./ssh/ssh.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -35,6 +36,7 @@ exports.AppModule = AppModule = __decorate([
         imports: [
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
+                envFilePath: `.env.${process.env.APP_ENV || 'development'}`,
             }),
             typeorm_1.TypeOrmModule.forRootAsync({
                 imports: [config_1.ConfigModule],
@@ -54,7 +56,9 @@ exports.AppModule = AppModule = __decorate([
                             extra: {
                                 max: 20,
                                 idleTimeoutMillis: 30000,
+                                connectionTimeoutMillis: 30000,
                             },
+                            connectTimeoutMS: 15000
                         };
                     }
                     const dbType = config.get('DB_TYPE') || 'mysql';
@@ -89,6 +93,7 @@ exports.AppModule = AppModule = __decorate([
             firewalls_module_1.FirewallsModule,
             routers_module_1.RoutersModule,
             switch_module_1.SwitchesModule,
+            ssh_module_1.SshModule,
             dashboard_module_1.DashboardModule,
         ],
     })

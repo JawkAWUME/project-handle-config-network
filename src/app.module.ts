@@ -28,6 +28,7 @@ import { SshModule } from './ssh/ssh.module';
     // Charger .env
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: `.env.${process.env.APP_ENV || 'development'}`,
     }),
 
     // Database – supporte MySQL en dev, PostgreSQL en production (Render)

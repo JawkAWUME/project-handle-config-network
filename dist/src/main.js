@@ -43,6 +43,7 @@ const winston = __importStar(require("winston"));
 const app_module_1 = require("./app.module");
 const http_exception_filter_1 = require("./common/filters/http-exception.filter");
 const common_1 = require("@nestjs/common");
+const platform_socket_io_1 = require("@nestjs/platform-socket.io");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule, {
         logger: nest_winston_1.WinstonModule.createLogger({
@@ -69,9 +70,10 @@ async function bootstrap() {
     app.enableCors({
         origin: process.env.FRONTEND_URL ?? 'https://network-manager-ui.vercel.app',
         methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-        credentials: true,
+        credentials: false,
         allowedHeaders: 'Content-Type, Accept, Authorization',
     });
+    app.useWebSocketAdapter(new platform_socket_io_1.IoAdapter(app));
     await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
