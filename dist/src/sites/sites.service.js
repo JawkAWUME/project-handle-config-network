@@ -121,6 +121,7 @@ let SitesService = class SitesService {
             { header: 'Téléphone', key: 'phone', width: 18 },
             { header: 'Statut', key: 'status', width: 12 },
             { header: 'Capacité', key: 'capacity', width: 12 },
+            { header: 'Type de connexion', key: 'connection_type', width: 20 },
             { header: 'Créé le', key: 'created_at', width: 20 },
         ];
         sheet.getRow(1).font = { bold: true };
@@ -142,6 +143,7 @@ let SitesService = class SitesService {
                 phone: s.phone,
                 status: s.status,
                 capacity: s.capacity,
+                connection_type: s.connection_type ?? '',
                 created_at: s.created_at ? new Date(s.created_at).toLocaleDateString('fr-FR') : '',
             });
         });

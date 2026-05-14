@@ -248,8 +248,6 @@ let SwitchesService = class SwitchesService {
             brand: sw.brand,
             model: sw.model,
             status: sw.status,
-            connection_type: sw.connection_type,
-            connection_type_label: this.getConnectionTypeLabel(sw.connection_type),
             username: sw.username,
             password: sw.password,
             ip_nms: sw.ip_nms,
@@ -267,16 +265,6 @@ let SwitchesService = class SwitchesService {
             site_id: sw.site_id,
             port_config: sw.port_config,
         };
-    }
-    getConnectionTypeLabel(type) {
-        if (!type)
-            return 'Non défini';
-        const labels = {
-            [switch_entity_1.ConnectionType.FH]: 'Faisceau Hertzien',
-            [switch_entity_1.ConnectionType.FO]: 'Fibre Optique',
-            [switch_entity_1.ConnectionType.BOTH]: 'FH + FO',
-        };
-        return labels[type];
     }
     async updatePorts(id, configuration, user) {
         const sw = await this.switchesRepository.findOne({ where: { id } });

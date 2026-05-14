@@ -4,7 +4,7 @@ import {
   IsEnum,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { EquipmentStatus, ConnectionType } from './firewall.entity';
+import { EquipmentStatus } from './firewall.entity';
 
 export class CreateFirewallDto {
   @IsString()
@@ -39,9 +39,9 @@ export class CreateFirewallDto {
   @IsEnum(EquipmentStatus)
   status?: EquipmentStatus;
 
-  @IsOptional()
-  @IsEnum(ConnectionType)
-  connection_type?: ConnectionType;
+  // @IsOptional()
+  // @IsEnum(ConnectionType)
+  // connection_type?: ConnectionType;
 
   @IsOptional() @IsString() configuration?: string;
   @IsOptional() @IsString() notes?: string;

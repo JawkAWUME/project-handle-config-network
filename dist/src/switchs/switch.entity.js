@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Switch = exports.ConnectionType = exports.EquipmentStatus = void 0;
+exports.Switch = exports.EquipmentStatus = void 0;
 const typeorm_1 = require("typeorm");
 const site_entity_1 = require("../sites/site.entity");
 const user_entity_1 = require("../users/user.entity");
@@ -20,12 +20,6 @@ var EquipmentStatus;
     EquipmentStatus["WARNING"] = "warning";
     EquipmentStatus["DANGER"] = "danger";
 })(EquipmentStatus || (exports.EquipmentStatus = EquipmentStatus = {}));
-var ConnectionType;
-(function (ConnectionType) {
-    ConnectionType["FH"] = "fh";
-    ConnectionType["FO"] = "fo";
-    ConnectionType["BOTH"] = "both";
-})(ConnectionType || (exports.ConnectionType = ConnectionType = {}));
 let Switch = class Switch {
     id;
     name;
@@ -48,7 +42,6 @@ let Switch = class Switch {
     configuration;
     last_backup;
     status;
-    connection_type;
     notes;
     created_at;
     updated_at;
@@ -140,10 +133,6 @@ __decorate([
     (0, typeorm_1.Column)({ type: 'enum', enum: EquipmentStatus, default: EquipmentStatus.ACTIVE }),
     __metadata("design:type", String)
 ], Switch.prototype, "status", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ type: 'enum', enum: ConnectionType, nullable: true }),
-    __metadata("design:type", String)
-], Switch.prototype, "connection_type", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'text', nullable: true }),
     __metadata("design:type", String)

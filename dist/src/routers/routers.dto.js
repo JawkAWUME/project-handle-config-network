@@ -34,7 +34,6 @@ class CreateRouterDto {
     serial_number;
     asset_tag;
     status;
-    connection_type;
     notes;
 }
 exports.CreateRouterDto = CreateRouterDto;
@@ -143,11 +142,6 @@ __decorate([
     (0, class_validator_1.IsEnum)(router_entity_1.EquipmentStatus),
     __metadata("design:type", String)
 ], CreateRouterDto.prototype, "status", void 0);
-__decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsEnum)(router_entity_1.ConnectionType),
-    __metadata("design:type", String)
-], CreateRouterDto.prototype, "connection_type", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),

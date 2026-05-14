@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ConnectionType, EquipmentStatus, Firewall } from './firewall.entity';
+import { EquipmentStatus, Firewall } from './firewall.entity';
 import { ConfigurationHistory, DeviceType } from '../config-history/config-history.entity';
 import { CreateFirewallDto, UpdateFirewallDto, FirewallQueryDto } from './firewalls.dto';
 import { UserRole } from '../users/user.entity';
@@ -280,8 +280,6 @@ export class FirewallsService {
       model: fw.model,
       firewall_type: fw.firewall_type,
       status: fw.status,
-      connection_type: fw.connection_type,
-      connection_type_label: this.getConnectionTypeLabel(fw.connection_type),
       username: fw.username,
       password: fw.password,
       enable_password: fw.enable_password,
@@ -307,15 +305,15 @@ export class FirewallsService {
     };
   }
 
-  private getConnectionTypeLabel(type: ConnectionType | null): string {
-    if (!type) return 'Non défini';
-    const labels = {
-      [ConnectionType.FH]: 'Faisceau Hertzien',
-      [ConnectionType.FO]: 'Fibre Optique',
-      [ConnectionType.BOTH]: 'FH + FO',
-    };
-    return labels[type];
-  }
+  // private getConnectionTypeLabel(type: ConnectionType | null): string {
+  //   if (!type) return 'Non défini';
+  //   const labels = {
+  //     [ConnectionType.FH]: 'Faisceau Hertzien',
+  //     [ConnectionType.FO]: 'Fibre Optique',
+  //     [ConnectionType.BOTH]: 'FH + FO',
+  //   };
+  //   return labels[type];
+  // }
 
   async updateSecurityPolicies(id: number, policies: string, user: any): Promise<Firewall> {
     const fw = await this.firewallsRepository.findOne({ where: { id } });

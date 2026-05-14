@@ -1,3 +1,4 @@
+import { ConnectionType } from './site.entity';
 export declare class CreateSiteDto {
     name: string;
     code?: string;
@@ -14,6 +15,7 @@ export declare class CreateSiteDto {
     notes?: string;
     latitude?: number;
     longitude?: number;
+    connection_type?: ConnectionType;
 }
 export declare class UpdateSiteDto extends CreateSiteDto {
 }

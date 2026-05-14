@@ -18,11 +18,11 @@ export enum EquipmentStatus {
   DANGER = 'danger'
 }
 
-export enum ConnectionType {
-  FH = 'fh',
-  FO = 'fo',
-  BOTH = 'both'
-}
+// export enum ConnectionType {
+//   FH = 'fh',
+//   FO = 'fo',
+//   BOTH = 'both'
+// }
 
 @Entity('switches')
 export class Switch {
@@ -89,8 +89,8 @@ export class Switch {
   @Column({ type: 'enum', enum: EquipmentStatus, default: EquipmentStatus.ACTIVE })
   status!: EquipmentStatus;
    
-  @Column({ type: 'enum', enum: ConnectionType, nullable: true })
-  connection_type!: ConnectionType;
+  // @Column({ type: 'enum', enum: ConnectionType, nullable: true })
+  // connection_type!: ConnectionType;
 
   @Column({ type: 'text', nullable: true })
   notes!: string;

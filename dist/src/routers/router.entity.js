@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Router = exports.ConnectionType = exports.EquipmentStatus = void 0;
+exports.Router = exports.EquipmentStatus = void 0;
 const typeorm_1 = require("typeorm");
 const class_transformer_1 = require("class-transformer");
 const site_entity_1 = require("../sites/site.entity");
@@ -21,12 +21,6 @@ var EquipmentStatus;
     EquipmentStatus["WARNING"] = "warning";
     EquipmentStatus["DANGER"] = "danger";
 })(EquipmentStatus || (exports.EquipmentStatus = EquipmentStatus = {}));
-var ConnectionType;
-(function (ConnectionType) {
-    ConnectionType["FH"] = "fh";
-    ConnectionType["FO"] = "fo";
-    ConnectionType["BOTH"] = "both";
-})(ConnectionType || (exports.ConnectionType = ConnectionType = {}));
 let Router = class Router {
     id;
     name;
@@ -54,7 +48,6 @@ let Router = class Router {
     serial_number;
     asset_tag;
     status;
-    connection_type;
     last_backup;
     notes;
     created_at;
@@ -183,10 +176,6 @@ __decorate([
     (0, typeorm_1.Column)({ type: 'enum', enum: EquipmentStatus, default: EquipmentStatus.ACTIVE }),
     __metadata("design:type", String)
 ], Router.prototype, "status", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ type: 'enum', enum: ConnectionType, nullable: true }),
-    __metadata("design:type", String)
-], Router.prototype, "connection_type", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true, type: 'timestamp' }),
     __metadata("design:type", Date)

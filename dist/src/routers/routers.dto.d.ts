@@ -1,4 +1,4 @@
-import { EquipmentStatus, ConnectionType } from './router.entity';
+import { EquipmentStatus } from './router.entity';
 export declare class CreateRouterDto {
     name: string;
     site_id?: number;
@@ -20,7 +20,6 @@ export declare class CreateRouterDto {
     serial_number?: string;
     asset_tag?: string;
     status?: EquipmentStatus;
-    connection_type?: ConnectionType;
     notes?: string;
 }
 export declare class UpdateRouterDto extends CreateRouterDto {

@@ -19,6 +19,5 @@ export declare class RoutersService {
     getStatistics(): Promise<any>;
     exportToExcel(): Promise<Buffer>;
     private formatRouter;
-    private getConnectionTypeLabel;
     updateInterfaces(id: number, config: string, user: any): Promise<Router>;
 }

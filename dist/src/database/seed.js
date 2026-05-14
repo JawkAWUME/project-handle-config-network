@@ -35,7 +35,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 require("reflect-metadata");
 const dotenv = __importStar(require("dotenv"));
-dotenv.config();
+dotenv.config({ path: `.env.${process.env.APP_ENV || 'development'}` });
 const typeorm_1 = require("typeorm");
 const bcrypt = __importStar(require("bcryptjs"));
 const user_entity_1 = require("../users/user.entity");
@@ -44,97 +44,79 @@ const firewall_entity_1 = require("../firewalls/firewall.entity");
 const router_entity_1 = require("../routers/router.entity");
 const switch_entity_1 = require("../switchs/switch.entity");
 const force = process.env.SEED_FORCE === 'true';
+const isProd = process.env.APP_ENV === 'production';
 const AppDataSource = new typeorm_1.DataSource({
     type: 'postgres',
     url: process.env.DATABASE_URL,
     entities: [user_entity_1.User, site_entity_1.Site, firewall_entity_1.Firewall, router_entity_1.Router, switch_entity_1.Switch],
-    synchronize: false,
+    synchronize: !isProd,
+    logging: false,
     ssl: process.env.DATABASE_URL?.includes('render.com')
         ? { rejectUnauthorized: false }
         : false,
     extra: {
-        max: 5,
+        max: 1,
         idleTimeoutMillis: 30000,
-        connectionTimeoutMillis: 10000,
+        connectionTimeoutMillis: 30000,
         keepAlive: true,
+        statement_timeout: 60000,
+        query_timeout: 60000,
     },
-    connectTimeoutMS: 15000,
 });
+async function pause(ms = 300) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 async function seed() {
     console.log('🔧 DATABASE_URL =', process.env.DATABASE_URL ? '***' : 'NON DÉFINIE');
     try {
         await AppDataSource.initialize();
-        console.log('✅ Connexion DB établie');
+        console.log('✅ Connexion PostgreSQL établie');
         const userRepo = AppDataSource.getRepository(user_entity_1.User);
         const siteRepo = AppDataSource.getRepository(site_entity_1.Site);
         const fwRepo = AppDataSource.getRepository(firewall_entity_1.Firewall);
         const routerRepo = AppDataSource.getRepository(router_entity_1.Router);
         const swRepo = AppDataSource.getRepository(switch_entity_1.Switch);
         if (force) {
+            console.log('🔥 Réinitialisation DB...');
             await AppDataSource.query(`
-        TRUNCATE users, sites, firewalls, routers, switches 
+        TRUNCATE TABLE
+          firewalls,
+          routers,
+          switches,
+          users,
+          sites
         RESTART IDENTITY CASCADE
       `);
-            console.log('🔥 DB reset complet');
+            console.log('✅ Base réinitialisée');
+            await pause();
         }
         if (await userRepo.count() === 0) {
+            console.log('👤 Création des utilisateurs...');
             const passwordHash = await bcrypt.hash('password', 12);
-            await userRepo.save([
-                userRepo.create({
-                    name: 'Administrateur',
-                    email: 'admin@network.local',
-                    password: passwordHash,
-                    role: user_entity_1.UserRole.ADMIN,
-                    department: 'Informatique',
-                    is_active: true,
-                }),
-                userRepo.create({
-                    name: 'Agent Réseau',
-                    email: 'agent@network.local',
-                    password: passwordHash,
-                    role: user_entity_1.UserRole.AGENT,
-                    department: 'Réseau',
-                    is_active: true,
-                }),
-                userRepo.create({
-                    name: 'Observateur',
-                    email: 'viewer@network.local',
-                    password: passwordHash,
-                    role: user_entity_1.UserRole.VIEWER,
-                    department: 'Direction',
-                    is_active: true,
-                }),
-                userRepo.create({
-                    name: 'Support Technique',
-                    email: 'support@network.local',
-                    password: passwordHash,
-                    role: user_entity_1.UserRole.AGENT,
-                    department: 'Support',
-                    is_active: true,
-                }),
-                userRepo.create({
-                    name: 'Consultant Externe',
-                    email: 'consultant@network.local',
-                    password: passwordHash,
-                    role: user_entity_1.UserRole.VIEWER,
-                    department: 'Consulting',
-                    is_active: false,
-                }),
-            ]);
+            const usersData = [
+                { name: 'Administrateur', email: 'admin@network.local', password: passwordHash, role: user_entity_1.UserRole.ADMIN, department: 'Informatique', is_active: true },
+                { name: 'Agent Réseau', email: 'agent@network.local', password: passwordHash, role: user_entity_1.UserRole.AGENT, department: 'Réseau', is_active: true },
+                { name: 'Observateur', email: 'viewer@network.local', password: passwordHash, role: user_entity_1.UserRole.VIEWER, department: 'Direction', is_active: true },
+                { name: 'Support Technique', email: 'support@network.local', password: passwordHash, role: user_entity_1.UserRole.AGENT, department: 'Support', is_active: true },
+                { name: 'Consultant Externe', email: 'consultant@network.local', password: passwordHash, role: user_entity_1.UserRole.VIEWER, department: 'Consulting', is_active: false },
+            ];
+            for (const user of usersData) {
+                await userRepo.save(userRepo.create(user));
+            }
             console.log('✅ Users créés (5)');
+            await pause();
         }
-        else {
+        else
             console.log('⏭️ Users déjà présents');
-        }
         const users = await userRepo.find();
         let sites = [];
         if (await siteRepo.count() === 0) {
-            sites = await siteRepo.save([
+            console.log('🏢 Création des sites...');
+            const sitesData = [
                 {
                     name: 'Siège Social Dakar',
                     code: 'HQ-DKR',
                     city: 'Dakar',
-                    region: 'dakar',
                     country: 'Sénégal',
                     address: '12 Av. Léopold Sédar Senghor',
                     postal_code: '10000',
@@ -144,13 +126,13 @@ async function seed() {
                     technical_contact: 'Admin IT',
                     technical_email: 'it@company.sn',
                     status: 'active',
-                    description: 'Bâtiment principal – direction générale',
+                    description: 'Bâtiment principal',
+                    connection_type: site_entity_1.ConnectionType.FO,
                 },
                 {
                     name: 'Agence Plateau',
                     code: 'AGT-PLT',
                     city: 'Dakar',
-                    region: 'dakar',
                     country: 'Sénégal',
                     address: '5 Rue Carnot',
                     postal_code: '10001',
@@ -160,12 +142,12 @@ async function seed() {
                     technical_contact: 'Technicien A',
                     technical_email: 'tech.plateau@company.sn',
                     status: 'active',
+                    connection_type: site_entity_1.ConnectionType.FH,
                 },
                 {
                     name: 'Agence Thiès',
                     code: 'AGT-THS',
                     city: 'Thiès',
-                    region: 'thies',
                     country: 'Sénégal',
                     address: '10 Rue de la Gare',
                     postal_code: '21000',
@@ -175,42 +157,49 @@ async function seed() {
                     technical_contact: 'Technicien B',
                     technical_email: 'tech.thies@company.sn',
                     status: 'active',
+                    connection_type: site_entity_1.ConnectionType.FH,
                 },
                 {
                     name: 'DataCenter Principal',
                     code: 'DC-MAIN',
                     city: 'Dakar',
-                    region: 'dakar',
                     country: 'Sénégal',
-                    address: 'Rue de la Technologie, Zone Industrielle',
+                    address: 'Zone Industrielle',
                     postal_code: '10002',
-                    latitude: 14.7500,
-                    longitude: -17.4000,
+                    latitude: 14.75,
+                    longitude: -17.4,
                     status: 'active',
                     capacity: 200,
                     technical_contact: 'DBA Team',
                     technical_email: 'dba@datacenter.sn',
+                    connection_type: site_entity_1.ConnectionType.BOTH,
                 },
                 {
-                    name: 'Agence Saint‑Louis',
+                    name: 'Agence Saint-Louis',
                     code: 'AGT-SL',
-                    city: 'Saint‑Louis',
-                    region: 'saint-louis',
+                    city: 'Saint-Louis',
                     country: 'Sénégal',
                     address: '38 Avenue Faidherbe',
                     postal_code: '32000',
                     latitude: 16.0179,
                     longitude: -16.4896,
                     status: 'inactive',
+                    connection_type: site_entity_1.ConnectionType.FO,
                 },
-            ]);
+            ];
+            for (const site of sitesData) {
+                const created = await siteRepo.save(siteRepo.create(site));
+                sites.push(created);
+            }
             console.log('✅ Sites créés (5)');
+            await pause();
         }
         else {
             sites = await siteRepo.find();
             console.log('⏭️ Sites déjà présents');
         }
         if (await fwRepo.count() === 0) {
+            console.log('🔥 Création des firewalls...');
             const firewalls = [
                 {
                     name: 'FW-HQ-01',
@@ -225,7 +214,6 @@ async function seed() {
                     vlan_service: 200,
                     username: 'admin',
                     password: 'Fortinet@123',
-                    enable_password: 'enable123',
                     firmware_version: '7.2.4',
                     serial_number: 'FT600E-001',
                     status: firewall_entity_1.EquipmentStatus.ACTIVE,
@@ -234,8 +222,6 @@ async function seed() {
                     security_policies_count: 42,
                     cpu: 23,
                     memory: 45,
-                    connection_type: firewall_entity_1.ConnectionType.FO,
-                    notes: 'Firewall principal siège',
                 },
                 {
                     name: 'FW-DC-01',
@@ -258,59 +244,18 @@ async function seed() {
                     security_policies_count: 128,
                     cpu: 45,
                     memory: 62,
-                    connection_type: firewall_entity_1.ConnectionType.BOTH,
-                },
-                {
-                    name: 'FW-PLT-01',
-                    site_id: sites[1].id,
-                    user_id: users[1].id,
-                    firewall_type: firewall_entity_1.FirewallType.CISCO_ASA,
-                    brand: 'Cisco',
-                    model: 'ASA 5525-X',
-                    ip_nms: '10.2.0.1',
-                    ip_service: '192.168.3.1',
-                    vlan_nms: 120,
-                    vlan_service: 220,
-                    username: 'cisco',
-                    password: 'Cisco@123',
-                    firmware_version: '9.16',
-                    serial_number: 'ASA5525-001',
-                    status: firewall_entity_1.EquipmentStatus.INACTIVE,
-                    monitoring_enabled: false,
-                    security_policies_count: 18,
-                    cpu: 0,
-                    memory: 0,
-                    connection_type: firewall_entity_1.ConnectionType.FH,
-                    notes: 'Agence Plateau – désactivé',
-                },
-                {
-                    name: 'FW-SL-01',
-                    site_id: sites[4].id,
-                    user_id: users[1].id,
-                    firewall_type: firewall_entity_1.FirewallType.CHECKPOINT,
-                    brand: 'Check Point',
-                    model: '5800',
-                    ip_nms: '10.4.0.1',
-                    ip_service: '192.168.4.1',
-                    vlan_nms: 130,
-                    vlan_service: 230,
-                    username: 'admin',
-                    password: 'CheckPoint@123',
-                    status: firewall_entity_1.EquipmentStatus.WARNING,
-                    cpu: 12,
-                    memory: 30,
-                    security_policies_count: 56,
-                    connection_type: firewall_entity_1.ConnectionType.FO,
-                    notes: 'Agence Saint‑Louis – avertissement',
                 },
             ];
-            await fwRepo.save(firewalls);
-            console.log('✅ Firewalls créés (4)');
+            for (const fw of firewalls) {
+                await fwRepo.save(fwRepo.create(fw));
+            }
+            console.log('✅ Firewalls créés');
+            await pause();
         }
-        else {
+        else
             console.log('⏭️ Firewalls déjà présents');
-        }
         if (await routerRepo.count() === 0) {
+            console.log('📡 Création des routeurs...');
             const routers = [
                 {
                     name: 'RT-HQ-CORE',
@@ -324,103 +269,24 @@ async function seed() {
                     vlan_service: 200,
                     username: 'admin',
                     password: 'Cisco@456',
-                    enable_password: 'cisco456',
                     operating_system: 'IOS-XE 17.6',
                     serial_number: 'FTX1234A567',
                     interfaces_count: 8,
                     interfaces_up_count: 6,
                     routing_protocols: ['OSPF', 'BGP'],
                     status: firewall_entity_1.EquipmentStatus.ACTIVE,
-                    connection_type: firewall_entity_1.ConnectionType.FO,
-                    notes: 'Routeur cœur du siège',
-                },
-                {
-                    name: 'RT-DC-EDGE',
-                    site_id: sites[3].id,
-                    user_id: users[0].id,
-                    brand: 'Juniper',
-                    model: 'MX204',
-                    ip_nms: '10.1.1.1',
-                    ip_service: '192.168.2.2',
-                    vlan_nms: 110,
-                    vlan_service: 210,
-                    username: 'juniper',
-                    password: 'Juniper@789',
-                    operating_system: 'JunOS 21.4',
-                    serial_number: 'MX204-DC1',
-                    interfaces_count: 4,
-                    interfaces_up_count: 4,
-                    routing_protocols: ['BGP', 'IS-IS'],
-                    status: firewall_entity_1.EquipmentStatus.ACTIVE,
-                    connection_type: firewall_entity_1.ConnectionType.BOTH,
-                },
-                {
-                    name: 'RT-THS-01',
-                    site_id: sites[2].id,
-                    user_id: users[1].id,
-                    brand: 'Cisco',
-                    model: 'ISR 1111',
-                    ip_nms: '10.3.1.1',
-                    ip_service: '192.168.3.2',
-                    vlan_nms: 120,
-                    vlan_service: 220,
-                    username: 'admin',
-                    password: 'CiscoThs@111',
-                    operating_system: 'IOS-XE 16.12',
-                    serial_number: 'ISR1111-THS',
-                    interfaces_count: 4,
-                    interfaces_up_count: 3,
-                    status: firewall_entity_1.EquipmentStatus.ACTIVE,
-                    connection_type: firewall_entity_1.ConnectionType.FH,
-                },
-                {
-                    name: 'RT-PLT-01',
-                    site_id: sites[1].id,
-                    user_id: users[1].id,
-                    brand: 'MikroTik',
-                    model: 'CCR1036-8G-2S+',
-                    ip_nms: '10.2.1.1',
-                    ip_service: '192.168.4.2',
-                    vlan_nms: 130,
-                    vlan_service: 230,
-                    username: 'admin',
-                    password: 'MikroTik@2024',
-                    operating_system: 'RouterOS 7.10',
-                    interfaces_count: 12,
-                    interfaces_up_count: 10,
-                    status: firewall_entity_1.EquipmentStatus.ACTIVE,
-                    connection_type: firewall_entity_1.ConnectionType.FO,
-                    notes: 'Routeur agence Plateau',
-                },
-                {
-                    name: 'RT-DC-INTERNAL',
-                    site_id: sites[3].id,
-                    user_id: users[0].id,
-                    brand: 'Cisco',
-                    model: 'ISR 4321',
-                    ip_nms: '10.1.2.1',
-                    ip_service: '172.16.0.1',
-                    vlan_nms: 150,
-                    vlan_service: 250,
-                    username: 'admin',
-                    password: 'CiscoInternal@999',
-                    enable_password: 'internal999',
-                    operating_system: 'IOS-XE 17.9',
-                    interfaces_count: 2,
-                    interfaces_up_count: 2,
-                    routing_protocols: ['OSPF'],
-                    status: firewall_entity_1.EquipmentStatus.ACTIVE,
-                    connection_type: firewall_entity_1.ConnectionType.FO,
-                    notes: 'Routeur interne data center',
                 },
             ];
-            await routerRepo.save(routers);
-            console.log('✅ Routeurs créés (5)');
+            for (const router of routers) {
+                await routerRepo.save(routerRepo.create(router));
+            }
+            console.log('✅ Routeurs créés');
+            await pause();
         }
-        else {
+        else
             console.log('⏭️ Routeurs déjà présents');
-        }
         if (await swRepo.count() === 0) {
+            console.log('🔀 Création des switches...');
             const switches = [
                 {
                     name: 'SW-HQ-ACCESS-01',
@@ -437,120 +303,29 @@ async function seed() {
                     ports_used: 34,
                     serial_number: 'FCW2345G890',
                     status: firewall_entity_1.EquipmentStatus.ACTIVE,
-                    connection_type: firewall_entity_1.ConnectionType.FO,
-                    notes: "Switch d'accès principal",
-                },
-                {
-                    name: 'SW-HQ-CORE-01',
-                    site_id: sites[0].id,
-                    user_id: users[0].id,
-                    brand: 'Cisco',
-                    model: 'Catalyst 9500-24Y4C',
-                    ip_nms: '10.0.2.2',
-                    vlan_nms: 100,
-                    username: 'admin',
-                    password: 'CiscoCore@2',
-                    firmware_version: '17.6.1',
-                    ports_total: 24,
-                    ports_used: 20,
-                    status: firewall_entity_1.EquipmentStatus.ACTIVE,
-                    connection_type: firewall_entity_1.ConnectionType.BOTH,
-                },
-                {
-                    name: 'SW-DC-TOR-01',
-                    site_id: sites[3].id,
-                    user_id: users[0].id,
-                    brand: 'Arista',
-                    model: '7050CX3-32S',
-                    ip_nms: '10.1.2.1',
-                    vlan_nms: 110,
-                    username: 'admin',
-                    password: 'Arista@123',
-                    firmware_version: '4.28.0',
-                    ports_total: 32,
-                    ports_used: 28,
-                    serial_number: 'AR-DC-TOR-01',
-                    status: firewall_entity_1.EquipmentStatus.ACTIVE,
-                    connection_type: firewall_entity_1.ConnectionType.FO,
-                    notes: 'Top of Rack DataCenter',
-                },
-                {
-                    name: 'SW-DC-STORAGE',
-                    site_id: sites[3].id,
-                    user_id: users[0].id,
-                    brand: 'Dell',
-                    model: 'PowerSwitch S5248F-ON',
-                    ip_nms: '10.1.2.2',
-                    vlan_nms: 150,
-                    username: 'root',
-                    password: 'DellSwitch@456',
-                    firmware_version: '10.5.3',
-                    ports_total: 48,
-                    ports_used: 40,
-                    status: firewall_entity_1.EquipmentStatus.ACTIVE,
-                    connection_type: firewall_entity_1.ConnectionType.FO,
-                    notes: 'Switch stockage SAN',
-                },
-                {
-                    name: 'SW-PLT-01',
-                    site_id: sites[1].id,
-                    user_id: users[1].id,
-                    brand: 'HP',
-                    model: 'Aruba 2930F',
-                    ip_nms: '10.2.2.1',
-                    vlan_nms: 120,
-                    username: 'admin',
-                    password: 'Aruba@789',
-                    ports_total: 24,
-                    ports_used: 0,
-                    status: firewall_entity_1.EquipmentStatus.INACTIVE,
-                    connection_type: firewall_entity_1.ConnectionType.FH,
-                    notes: 'Switch plateau – hors service',
-                },
-                {
-                    name: 'SW-THS-01',
-                    site_id: sites[2].id,
-                    user_id: users[1].id,
-                    brand: 'Cisco',
-                    model: 'Catalyst 2960X',
-                    ip_nms: '10.3.2.1',
-                    vlan_nms: 120,
-                    username: 'admin',
-                    password: 'CiscoThs@22',
-                    firmware_version: '15.2.7',
-                    ports_total: 24,
-                    ports_used: 12,
-                    serial_number: 'FOC1234THS',
-                    status: firewall_entity_1.EquipmentStatus.ACTIVE,
-                    connection_type: firewall_entity_1.ConnectionType.FH,
-                    notes: 'Switch agence Thiès',
-                },
-                {
-                    name: 'SW-SL-01',
-                    site_id: sites[4].id,
-                    user_id: users[1].id,
-                    brand: 'Cisco',
-                    model: 'Catalyst 2960XR',
-                    ip_nms: '10.4.2.1',
-                    vlan_nms: 130,
-                    status: firewall_entity_1.EquipmentStatus.WARNING,
-                    ports_total: 24,
-                    ports_used: 8,
-                    connection_type: firewall_entity_1.ConnectionType.FO,
-                    notes: 'Switch agence Saint‑Louis – alerte',
                 },
             ];
-            await swRepo.save(switches);
-            console.log('✅ Switches créés (7)');
+            for (const sw of switches) {
+                await swRepo.save(swRepo.create(sw));
+            }
+            console.log('✅ Switches créés');
+            await pause();
         }
-        else {
+        else
             console.log('⏭️ Switches déjà présents');
-        }
         await AppDataSource.destroy();
         console.log('\n🎉 SEED TERMINÉ PROPREMENT');
     }
     catch (err) {
         console.error('❌ Erreur seed :', err);
+        try {
+            if (AppDataSource.isInitialized) {
+                await AppDataSource.destroy();
+            }
+        }
+        catch (closeErr) {
+            console.error('❌ Erreur fermeture DB :', closeErr);
+        }
         process.exit(1);
     }
 }

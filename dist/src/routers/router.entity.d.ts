@@ -6,11 +6,6 @@ export declare enum EquipmentStatus {
     WARNING = "warning",
     DANGER = "danger"
 }
-export declare enum ConnectionType {
-    FH = "fh",
-    FO = "fo",
-    BOTH = "both"
-}
 export declare class Router {
     id: number;
     name: string;
@@ -38,7 +33,6 @@ export declare class Router {
     serial_number: string;
     asset_tag: string;
     status: EquipmentStatus;
-    connection_type: ConnectionType;
     last_backup: Date;
     notes: string;
     created_at: Date;

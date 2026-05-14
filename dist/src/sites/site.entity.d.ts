@@ -1,3 +1,8 @@
+export declare enum ConnectionType {
+    FH = "fh",
+    FO = "fo",
+    BOTH = "both"
+}
 export declare class Site {
     id: number;
     name: string;
@@ -15,6 +20,7 @@ export declare class Site {
     notes: string;
     latitude: number;
     longitude: number;
+    connection_type: ConnectionType;
     created_at: Date;
     updated_at: Date;
 }

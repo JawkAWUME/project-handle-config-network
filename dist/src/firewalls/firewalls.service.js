@@ -319,8 +319,6 @@ let FirewallsService = class FirewallsService {
             model: fw.model,
             firewall_type: fw.firewall_type,
             status: fw.status,
-            connection_type: fw.connection_type,
-            connection_type_label: this.getConnectionTypeLabel(fw.connection_type),
             username: fw.username,
             password: fw.password,
             enable_password: fw.enable_password,
@@ -343,16 +341,6 @@ let FirewallsService = class FirewallsService {
             site_id: fw.site_id,
             configuration: fw.configuration,
         };
-    }
-    getConnectionTypeLabel(type) {
-        if (!type)
-            return 'Non défini';
-        const labels = {
-            [firewall_entity_1.ConnectionType.FH]: 'Faisceau Hertzien',
-            [firewall_entity_1.ConnectionType.FO]: 'Fibre Optique',
-            [firewall_entity_1.ConnectionType.BOTH]: 'FH + FO',
-        };
-        return labels[type];
     }
     async updateSecurityPolicies(id, policies, user) {
         const fw = await this.firewallsRepository.findOne({ where: { id } });

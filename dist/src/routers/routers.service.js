@@ -260,8 +260,6 @@ let RoutersService = class RoutersService {
             brand: router.brand,
             model: router.model,
             status: router.status,
-            connection_type: router.connection_type,
-            connection_type_label: this.getConnectionTypeLabel(router.connection_type),
             username: router.username,
             password: router.password,
             enable_password: router.enable_password,
@@ -280,16 +278,6 @@ let RoutersService = class RoutersService {
             site_id: router.site_id,
             interfaces_config: router.interfaces_config,
         };
-    }
-    getConnectionTypeLabel(type) {
-        if (!type)
-            return 'Non défini';
-        const labels = {
-            [router_entity_1.ConnectionType.FH]: 'Faisceau Hertzien',
-            [router_entity_1.ConnectionType.FO]: 'Fibre Optique',
-            [router_entity_1.ConnectionType.BOTH]: 'FH + FO',
-        };
-        return labels[type];
     }
     async updateInterfaces(id, config, user) {
         const router = await this.routersRepository.findOne({ where: { id } });

@@ -42,7 +42,7 @@ import { SshModule } from './ssh/ssh.module';
         // Si DATABASE_URL est fournie, on l'utilise (Render fournit cette variable)
         if (databaseUrl) {
           return {
-            type: isProd ? 'postgres' : 'mysql',
+            type: databaseUrl.startsWith('postgres') ? 'postgres' : 'mysql',
             url: databaseUrl,
             entities: [User, Site, Firewall, Router, Switch, ConfigurationHistory, AccessLog],
             synchronize: false, // jamais en production, mais pour éviter les surprises

@@ -13,11 +13,6 @@ export declare enum EquipmentStatus {
     WARNING = "warning",
     DANGER = "danger"
 }
-export declare enum ConnectionType {
-    FH = "fh",
-    FO = "fo",
-    BOTH = "both"
-}
 export declare class Firewall {
     id: number;
     name: string;
@@ -45,7 +40,6 @@ export declare class Firewall {
     serial_number: string;
     asset_tag: string;
     status: EquipmentStatus;
-    connection_type: ConnectionType;
     high_availability: boolean;
     ha_peer_id: number;
     monitoring_enabled: boolean;

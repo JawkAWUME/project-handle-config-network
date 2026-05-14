@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SearchSiteDto = exports.UpdateSiteDto = exports.CreateSiteDto = void 0;
 const class_validator_1 = require("class-validator");
 const class_transformer_1 = require("class-transformer");
+const site_entity_1 = require("./site.entity");
 class CreateSiteDto {
     name;
     code;
@@ -28,6 +29,7 @@ class CreateSiteDto {
     notes;
     latitude;
     longitude;
+    connection_type;
 }
 exports.CreateSiteDto = CreateSiteDto;
 __decorate([
@@ -108,6 +110,11 @@ __decorate([
     (0, class_transformer_1.Type)(() => Number),
     __metadata("design:type", Number)
 ], CreateSiteDto.prototype, "longitude", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsEnum)(site_entity_1.ConnectionType),
+    __metadata("design:type", String)
+], CreateSiteDto.prototype, "connection_type", void 0);
 class UpdateSiteDto extends CreateSiteDto {
 }
 exports.UpdateSiteDto = UpdateSiteDto;

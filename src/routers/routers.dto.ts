@@ -12,7 +12,7 @@ import {
   IsEnum,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { EquipmentStatus, ConnectionType } from './router.entity';
+import { EquipmentStatus } from './router.entity';
 
 export class CreateRouterDto {
   @IsString()
@@ -100,9 +100,9 @@ export class CreateRouterDto {
   @IsEnum(EquipmentStatus)
   status?: EquipmentStatus;
 
-  @IsOptional()
-  @IsEnum(ConnectionType)
-  connection_type?: ConnectionType;
+  // @IsOptional()
+  // @IsEnum(ConnectionType)
+  // connection_type?: ConnectionType;
 
   @IsOptional()
   @IsString()

@@ -6,11 +6,6 @@ export declare enum EquipmentStatus {
     WARNING = "warning",
     DANGER = "danger"
 }
-export declare enum ConnectionType {
-    FH = "fh",
-    FO = "fo",
-    BOTH = "both"
-}
 export declare class Switch {
     id: number;
     name: string;
@@ -33,7 +28,6 @@ export declare class Switch {
     configuration: string;
     last_backup: Date;
     status: EquipmentStatus;
-    connection_type: ConnectionType;
     notes: string;
     created_at: Date;
     updated_at: Date;

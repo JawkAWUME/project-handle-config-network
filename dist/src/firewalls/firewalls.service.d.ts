@@ -19,6 +19,5 @@ export declare class FirewallsService {
     getDashboardKpis(): Promise<any>;
     exportToExcel(): Promise<Buffer>;
     private formatFirewall;
-    private getConnectionTypeLabel;
     updateSecurityPolicies(id: number, policies: string, user: any): Promise<Firewall>;
 }

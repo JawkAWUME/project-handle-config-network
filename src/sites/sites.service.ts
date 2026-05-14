@@ -70,7 +70,6 @@ export class SitesService {
     await this.sitesRepository.remove(site);
   }
 
-  // Équivalent SiteController::export() + SiteExport.php
   async exportToExcel(): Promise<Uint8Array> {
     const sites = await this.sitesRepository.find({ order: { name: 'ASC' } });
 
@@ -89,6 +88,7 @@ export class SitesService {
       { header: 'Téléphone', key: 'phone', width: 18 },
       { header: 'Statut', key: 'status', width: 12 },
       { header: 'Capacité', key: 'capacity', width: 12 },
+      { header: 'Type de connexion', key: 'connection_type', width: 20 },   // 🆕 ajout
       { header: 'Créé le', key: 'created_at', width: 20 },
     ];
 
@@ -113,6 +113,7 @@ export class SitesService {
         phone: s.phone,
         status: s.status,
         capacity: s.capacity,
+        connection_type: s.connection_type ?? '',   // 🆕
         created_at: s.created_at ? new Date(s.created_at).toLocaleDateString('fr-FR') : '',
       });
     });

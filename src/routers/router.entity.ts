@@ -19,11 +19,11 @@ export enum EquipmentStatus {
   DANGER = 'danger'
 }
 
-export enum ConnectionType {
-  FH = 'fh',
-  FO = 'fo',
-  BOTH = 'both'
-}
+// export enum ConnectionType {
+//   FH = 'fh',
+//   FO = 'fo',
+//   BOTH = 'both'
+// }
 
 @Entity('routers')
 export class Router {
@@ -108,8 +108,8 @@ export class Router {
   @Column({ type: 'enum', enum: EquipmentStatus, default: EquipmentStatus.ACTIVE })
     status!: EquipmentStatus;
   
-  @Column({ type: 'enum', enum: ConnectionType, nullable: true })
-  connection_type!: ConnectionType;
+  // @Column({ type: 'enum', enum: ConnectionType, nullable: true })
+  // connection_type!: ConnectionType;
 
   @Column({ nullable: true, type: 'timestamp' })
   last_backup!: Date;

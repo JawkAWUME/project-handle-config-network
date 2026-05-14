@@ -1,5 +1,6 @@
-import { IsNotEmpty, IsString, IsOptional, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsString, IsOptional, IsNumber, IsEnum } from 'class-validator';
 import { Type } from 'class-transformer';
+import { ConnectionType } from './site.entity';
 
 export class CreateSiteDto {
   @IsString()
@@ -20,6 +21,9 @@ export class CreateSiteDto {
   @IsOptional() @IsString() notes?: string;
   @IsOptional() @IsNumber() @Type(() => Number) latitude?: number;
   @IsOptional() @IsNumber() @Type(() => Number) longitude?: number;
+    @IsOptional()
+  @IsEnum(ConnectionType)
+  connection_type?: ConnectionType;
 }
 
 export class UpdateSiteDto extends CreateSiteDto {}

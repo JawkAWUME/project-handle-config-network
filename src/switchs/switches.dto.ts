@@ -4,7 +4,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { Column } from 'typeorm';
-import { EquipmentStatus, ConnectionType } from './switch.entity';
+import { EquipmentStatus } from './switch.entity';
 
 export class CreateSwitchDto {
   @IsString()
@@ -41,8 +41,8 @@ export class CreateSwitchDto {
   @Column({ type: 'enum', enum: EquipmentStatus, default: EquipmentStatus.ACTIVE })
   status!: EquipmentStatus;
 
-   @Column({ type: 'enum', enum: ConnectionType, nullable: true })
-  connection_type!: ConnectionType;
+  //  @Column({ type: 'enum', enum: ConnectionType, nullable: true })
+  // connection_type!: ConnectionType;
 
   @IsOptional() @IsString() notes?: string;
 }
@@ -55,9 +55,9 @@ export class SwitchQueryDto {
 @IsEnum(EquipmentStatus)
 status?: EquipmentStatus;
 
-@IsOptional()
-@IsEnum(ConnectionType)
-connection_type?: ConnectionType;
+// @IsOptional()
+// @IsEnum(ConnectionType)
+// connection_type?: ConnectionType;
   brand?: string;
   site_id?: number;
   limit?: number;

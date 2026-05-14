@@ -9,8 +9,14 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Site = void 0;
+exports.Site = exports.ConnectionType = void 0;
 const typeorm_1 = require("typeorm");
+var ConnectionType;
+(function (ConnectionType) {
+    ConnectionType["FH"] = "fh";
+    ConnectionType["FO"] = "fo";
+    ConnectionType["BOTH"] = "both";
+})(ConnectionType || (exports.ConnectionType = ConnectionType = {}));
 let Site = class Site {
     id;
     name;
@@ -28,6 +34,7 @@ let Site = class Site {
     notes;
     latitude;
     longitude;
+    connection_type;
     created_at;
     updated_at;
 };
@@ -96,6 +103,10 @@ __decorate([
     (0, typeorm_1.Column)({ nullable: true, type: 'decimal', precision: 11, scale: 8 }),
     __metadata("design:type", Number)
 ], Site.prototype, "longitude", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'enum', enum: ConnectionType, nullable: true }),
+    __metadata("design:type", String)
+], Site.prototype, "connection_type", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)

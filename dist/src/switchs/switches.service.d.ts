@@ -18,6 +18,5 @@ export declare class SwitchesService {
     getStatistics(): Promise<any>;
     exportToExcel(): Promise<Buffer>;
     private formatSwitch;
-    private getConnectionTypeLabel;
     updatePorts(id: number, configuration: string, user: any): Promise<Switch>;
 }

@@ -46,7 +46,7 @@ exports.AppModule = AppModule = __decorate([
                     const databaseUrl = config.get('DATABASE_URL');
                     if (databaseUrl) {
                         return {
-                            type: isProd ? 'postgres' : 'mysql',
+                            type: databaseUrl.startsWith('postgres') ? 'postgres' : 'mysql',
                             url: databaseUrl,
                             entities: [user_entity_1.User, site_entity_1.Site, firewall_entity_1.Firewall, router_entity_1.Router, switch_entity_1.Switch, config_history_entity_1.ConfigurationHistory, access_log_entity_1.AccessLog],
                             synchronize: false,

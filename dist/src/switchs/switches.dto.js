@@ -32,7 +32,6 @@ class CreateSwitchDto {
     ports_used;
     configuration;
     status;
-    connection_type;
     notes;
 }
 exports.CreateSwitchDto = CreateSwitchDto;
@@ -130,10 +129,6 @@ __decorate([
     __metadata("design:type", String)
 ], CreateSwitchDto.prototype, "status", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'enum', enum: switch_entity_1.ConnectionType, nullable: true }),
-    __metadata("design:type", String)
-], CreateSwitchDto.prototype, "connection_type", void 0);
-__decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
@@ -144,7 +139,6 @@ exports.UpdateSwitchDto = UpdateSwitchDto;
 class SwitchQueryDto {
     search;
     status;
-    connection_type;
     brand;
     site_id;
     limit;
@@ -155,9 +149,4 @@ __decorate([
     (0, class_validator_1.IsEnum)(switch_entity_1.EquipmentStatus),
     __metadata("design:type", String)
 ], SwitchQueryDto.prototype, "status", void 0);
-__decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsEnum)(switch_entity_1.ConnectionType),
-    __metadata("design:type", String)
-], SwitchQueryDto.prototype, "connection_type", void 0);
 //# sourceMappingURL=switches.dto.js.map

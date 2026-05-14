@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ConnectionType, EquipmentStatus, Switch } from './switch.entity';
+import { EquipmentStatus, Switch } from './switch.entity';
 import { CreateSwitchDto, UpdateSwitchDto, SwitchQueryDto } from './switches.dto';
 import { ConfigurationHistory, ChangeType } from '../config-history/config-history.entity';
 import { UserRole } from '../users/user.entity';
@@ -230,8 +230,8 @@ export class SwitchesService {
       model: sw.model,
       // status: sw.status ? 'active' : 'inactive',
       status: sw.status,
-      connection_type: sw.connection_type,
-      connection_type_label: this.getConnectionTypeLabel(sw.connection_type),
+      // connection_type: sw.connection_type,
+      // connection_type_label: this.getConnectionTypeLabel(sw.connection_type),
       username: sw.username,
       password: sw.password,
       
@@ -252,15 +252,15 @@ export class SwitchesService {
     };
   }
 
-  private getConnectionTypeLabel(type: ConnectionType | null): string {
-    if (!type) return 'Non défini';
-    const labels = {
-      [ConnectionType.FH]: 'Faisceau Hertzien',
-      [ConnectionType.FO]: 'Fibre Optique',
-      [ConnectionType.BOTH]: 'FH + FO',
-    };
-    return labels[type];
-  }
+  // private getConnectionTypeLabel(type: ConnectionType | null): string {
+  //   if (!type) return 'Non défini';
+  //   const labels = {
+  //     [ConnectionType.FH]: 'Faisceau Hertzien',
+  //     [ConnectionType.FO]: 'Fibre Optique',
+  //     [ConnectionType.BOTH]: 'FH + FO',
+  //   };
+  //   return labels[type];
+  // }
 
   async updatePorts(id: number, configuration: string, user: any): Promise<Switch> {
     const sw = await this.switchesRepository.findOne({ where: { id } });

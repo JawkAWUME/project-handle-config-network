@@ -1,4 +1,4 @@
-import { EquipmentStatus, ConnectionType } from './firewall.entity';
+import { EquipmentStatus } from './firewall.entity';
 export declare class CreateFirewallDto {
     name: string;
     site_id?: number;
@@ -21,7 +21,6 @@ export declare class CreateFirewallDto {
     high_availability?: boolean;
     monitoring_enabled?: boolean;
     status?: EquipmentStatus;
-    connection_type?: ConnectionType;
     configuration?: string;
     notes?: string;
 }

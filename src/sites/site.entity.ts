@@ -1,11 +1,14 @@
 import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  OneToMany,
+  Entity, PrimaryGeneratedColumn, Column,
+  CreateDateColumn, UpdateDateColumn
 } from 'typeorm';
+
+// Enum déplacé ici pour qu'il soit central
+export enum ConnectionType {
+  FH = 'fh',
+  FO = 'fo',
+  BOTH = 'both'
+}
 
 @Entity('sites')
 export class Site {
@@ -56,6 +59,10 @@ export class Site {
 
   @Column({ nullable: true, type: 'decimal', precision: 11, scale: 8 })
   longitude!: number;
+
+  // 🆕 Nouvelle colonne
+  @Column({ type: 'enum', enum: ConnectionType, nullable: true })
+  connection_type!: ConnectionType;
 
   @CreateDateColumn()
   created_at!: Date;
